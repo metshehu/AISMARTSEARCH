@@ -24,8 +24,15 @@ STATIC_UPLOAD_DIR = os.path.join(BASE_DIR, 'static/uploads')
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-12)qzr@+vd$+cn_f20!yud2&)f^ghpau9n%87tar0s1lletp6-'
 # SECURITY WARNING: don't run with debug turned on in production!
-OPENAI_KEY="sk-xxxxxx"
-# Define media settings
+
+# Fetch the OpenAI API key from the environment
+
+OPENAI_KEY = os.environ.get('OPENAI_API_KEY')  # Define media settings
+if not OPENAI_KEY:
+    raise ValueError(
+        "OpenAI API key is not set. Please add it to your environment variables.")
+
+
 MEDIA_URL = '/media/'  # URL for accessing uploaded files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEBUG = True

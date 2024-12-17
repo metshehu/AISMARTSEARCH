@@ -3,6 +3,7 @@ from os import walk
 from pathlib import Path
 
 import numpy as np
+import openai
 import pandas as pd
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
@@ -15,120 +16,98 @@ from langchain_chroma import Chroma
 from langchain_openai import OpenAI, OpenAIEmbeddings
 from langchain_text_splitters import (CharacterTextSplitter,
                                       RecursiveCharacterTextSplitter)
+from openai import OpenAI
 from sklearn.metrics.pairwise import cosine_similarity
 
 from Main import Parsers
 
 from .forms import FileUploadForm
-from .models import TestUPFILE
 
 """
 Need to refactor the code and remvoe fileEmbedings lot of shit just rember to do this this week sundaytusday
 
-              """
-
-# Create your views here.
+"""
 
 
-def index(reuqest):
-    return HttpResponse("Hello, world. You're at the polls index.")
-
-
-def hello(re):
-    my_list = ['hello', 'this is somthing quite intresitn',
-               'this on the other hand is quite more simple ', 59000]
-    return render(request=re, template_name="home.html", context={'my_list': my_list})
-
-
-@csrf_exempt
-def upload_file(request):
-    if request.method == 'POST':
-        form = FileUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            # Redirect to fileEmbedings success page or display fileEmbedings success message
-            return redirect('file_upload_success')
-            # return redirect('save_staic_fiels')
-    else:
-        form = FileUploadForm()
-    return render(request, 'upload_file.html', {'form': form})
-
-
-def goThroEveryfile(querry_vector):
-    mypath = settings.STATIC_UPLOAD_DIR+'/'
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=600, chunk_overlap=150, length_function=len
-    )
-    fileEmbedings = Parsers(settings.OPENAI_KEY,
-                            text_splitter)
-
-    f = []
+def allCsvfiles(mypath):
+    files = []
     for (dirpath, dirnames, filenames) in walk(mypath):
-        f.extend(filenames)
+        csv_files = [file for file in filenames if file.endswith('.csv')]
+        files.extend(csv_files)
         break
-    allvalus = []
-    allchunks = []
-    for i in f:
-        if i[-4:] == '.csv':
-            a = fileEmbedings.ReadFromFile(mypath+i)
-            id = fileEmbedings.cosine_search(a[1], querry_vector)
-            allvalus.append(a[1][id])
-            allchunks.append(a[0][id])
-    return (allchunks, allvalus)
+    return files
+
+
+def system_file_parser(querry_vector):
+    mypath = settings.STATIC_UPLOAD_DIR+'/'
+    parser = Parsers(settings.OPENAI_KEY)
+    vectorlist = []
+    chunkslist = []
+    files = allCsvfiles(mypath)
+    for i in files:
+        chunks, vectors = parser.ReadFromFile(mypath + i)
+        closest_index = parser.cosine_search(vectors, querry_vector)
+        vectorlist.append(vectors[closest_index])
+        chunkslist.append(chunks[closest_index])
+    return (chunkslist, vectorlist)
+
+
+def openaitest(chunks, query):
+    # openai.api_key = settings.OPENAI_K
+    client = OpenAI(api_key=settings.OPENAI_KEY)
+    messages = [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": f"Context: {chunks}\n\nQuestion: {query}"}
+    ]
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        max_tokens=150  # test on the higer end to the lowest 50-600
+    )
+
+    response_message = response.choices[0].message.content
+    return response_message
+    # return response['choices'][0]['message']['content'].strip()
 
 
 def asking(request, text):
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=600, chunk_overlap=150, length_function=len
-    )
-    fileEmbedings = Parsers(settings.OPENAI_KEY,text_splitter)
+
+    fileEmbedings = Parsers(settings.OPENAI_KEY)
     query_vector = fileEmbedings.embedquerry(text)
 
-    k = goThroEveryfile(query_vector)
+    k = system_file_parser(query_vector)
 
-    b = fileEmbedings.cosine_search(k[1], query_vector)
-    return HttpResponse(f"what ever you say bro -> {k[0][b]}")
+    # b = fileEmbedings.cosine_search(k[1], query_vector)
+    res = openaitest(k[0], text)
+    return HttpResponse(f"what ever you say bro -> {res}")
+
+
+def save_file(uploaded_file):
+
+    # target_dir = os.path.join(settings.BASE_DIR, 'static', 'uploads')
+    # os.makedirs(target_dir, exist_ok=True)
+    fs = FileSystemStorage(location=settings.STATIC_UPLOAD_DIR)
+    fs.save(uploaded_file.name, uploaded_file)
+
+    file_url = f"{settings.STATIC_UPLOAD_DIR}/{uploaded_file.name}"
+    parser = Parsers(settings.OPENAI_KEY)
+    fileChunks, fileEmbedings = parser.embedd(file_url)
+    parser.SaveCsv(settings.STATIC_UPLOAD_DIR,
+                   uploaded_file.name[:-4], fileEmbedings, fileChunks)
+    return fileEmbedings
 
 
 @ csrf_exempt
-def save_files(request):
+def fileupload(request):
     if request.method == 'POST' and request.FILES['file']:
-
         uploaded_file = request.FILES['file']
-
-        # Define the target directory in the static folder
-        # target_dir = os.path.join(settings.BASE_DIR, 'static', 'uploads')
-        # os.makedirs(target_dir, exist_ok=True)
         my_file = Path(f"{settings.STATIC_UPLOAD_DIR}/{uploaded_file.name}")
         if not my_file.is_file():
-            fs = FileSystemStorage(location=settings.STATIC_UPLOAD_DIR)
-            fs.save(uploaded_file.name, uploaded_file)
-            file_url = f"{settings.STATIC_UPLOAD_DIR}/{uploaded_file.name}"
-            spliter = RecursiveCharacterTextSplitter(
-                chunk_size=600, chunk_overlap=150, length_function=len
-            )
-            tParser = Parsers(settings.OPENAI_KEY, spliter)
-            fileEmbedings = tParser.embedd(file_url)
-            tParser.SaveCsv(settings.STATIC_UPLOAD_DIR,
-                            uploaded_file.name[:-4], fileEmbedings, tParser.getChunks())
-            return JsonResponse({'success': True, 'data': fileEmbedings})
+            vectors = save_file(uploaded_file)
+            return JsonResponse({'success': True, 'data': vectors})
         else:
-            return JsonResponse({'success': False, 'data': "this file allredy existe mf "})
+            return JsonResponse({'success': False, 'data': "The File Existers allready"})
     else:
         form = FileUploadForm()
     return render(request, 'save-static.html', {'form': form})
-
-
-def upload_success(request):
-    return render(request, 'upload_success.html')
-
-
-def show(request):
-    l1 = TestUPFILE.objects.all()
-    text = '||'
-    for i in l1:
-        text += i.name
-        text += '||'
-    text += str(len(l1))
-
-    return HttpResponse(text)

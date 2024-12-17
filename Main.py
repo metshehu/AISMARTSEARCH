@@ -29,15 +29,11 @@ def ReadFromFile(file_path):
 
 
 class Parsers():
-    def __init__(self, apikey, spliter):
+    def __init__(self, apikey):
         self.apikey = apikey
-        self.vectors = OpenAIEmbeddings(openai_api_key=apikey)
-        self.splitter = spliter        # self.spliter=spltier#add later
-        self.chunks = []
-        self.vectordata = []
-        self.querry = []
-        self.buffer = []
-        self.embeddings = OpenAIEmbeddings(
+        self.splitter = RecursiveCharacterTextSplitter(
+            chunk_size=600, chunk_overlap=150, length_function=len)
+        self.embedingAPI = OpenAIEmbeddings(
             openai_api_key=self.apikey, model="text-embedding-3-large")
 
     def SetSpliter(self, spliter, chuncksize, overlap):
@@ -58,27 +54,6 @@ class Parsers():
                 self.splitter = CharacterTextSplitter(
                     chunk_size=chuncksize, chunk_overlap=overlap)
 
-#
-#    def SaveCsv(self, file_path):
-#        df = pd.DataFrame([self.db._collection.get()['vectors']])
-#        print(self.db._collection.get())
-#        df.to_csv(file_path+'.csv', index=False, header=False)
-#
-#    def setFile(self, file_path):
-#        self.file_path = file_path
-#
-#    def Load(self, file_path, file_type):
-#        if (file_type == 'png'):
-#            self.file_path = PyPDFLoader()
-
-    # curl https://api.openai.com/v1/vectors \
-#  -H "Content-Type: application/json" \
-#  -H "Authorization: Bearer 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" \
-#  -d '{
-#    "input": "this is a randomg text i dont give a fuck llaglaglgallgglaagllgaagl",
-#    "model": "text-embedding-3-small"
-#  }'
-
     def Print(self, showList):
         for vector in showList:
             print(str(vector)[:100]+'top')
@@ -87,18 +62,14 @@ class Parsers():
     def embedd(self, file_path):
         loader = PyPDFLoader(file_path)
         documents = loader.load()
-        self.chunks = self.splitter.split_documents(documents)
-        # self.chunks = [str(i) for i in self.chunks]
-        self.chunks = [doc.page_content for doc in self.chunks]
-        self.vectors = self.embeddings.embed_documents(self.chunks)
-        return self.vectors
-
-    def getChunks(self):
-        return self.chunks
+        chunks = self.splitter.split_documents(documents)
+        chunks = [doc.page_content for doc in chunks]
+        vectors = self.embedingAPI.embed_documents(chunks)
+        return (chunks, vectors)
 
     def embedquerry(self, querry):
-        self.querry = self.embeddings.embed_query(querry)
-        return self.querry
+        querry = self.embedingAPI.embed_query(querry)
+        return querry
 
     def SaveCsv(self, file_path, name, vectors, chunks):
         df = pd.DataFrame({
@@ -113,7 +84,6 @@ class Parsers():
     def ReadFromFile(self, file_path):
         df = pd.read_csv(file_path)
         chunks = df["chunks"].tolist()
-#        vectors = df["vectors"].tolist()
         vectors = df["vectors"].apply(
             ast.literal_eval).tolist()  # Convert strings to lists
         return (chunks, vectors)
@@ -139,8 +109,6 @@ class Parsers():
 
 
 # ------------------------------------------------------------------------------------------------
-# Step 8: Save the DataFrame to a CSV file_contet
-
 
     def Vectoraiz(self, file_path):
         self.file_contet = PyPDFLoader(file_path).load()
@@ -152,6 +120,7 @@ class Parsers():
         vectorEmbedQuery = OpenAIEmbeddings().embed_query(question)
         answer = self.db.similarity_search_by_vector(vectorEmbedQuery)
         return answer
+# ------------------------------------------------------------------------------------------------
 
 
 if __name__ == "__main__":
