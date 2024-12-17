@@ -24,7 +24,7 @@ STATIC_UPLOAD_DIR = os.path.join(BASE_DIR, 'static/uploads')
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-12)qzr@+vd$+cn_f20!yud2&)f^ghpau9n%87tar0s1lletp6-'
 # SECURITY WARNING: don't run with debug turned on in production!
-OPENAI_KEY="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"
+OPENAI_KEY="sk-xxxxxx"
 # Define media settings
 MEDIA_URL = '/media/'  # URL for accessing uploaded files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
