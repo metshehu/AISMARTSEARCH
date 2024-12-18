@@ -52,11 +52,12 @@ def system_file_parser(querry_vector):
     return (chunkslist, vectorlist)
 
 
-def openaitest(chunks, query):
+def context_aware_responses(chunks, query):
     # openai.api_key = settings.OPENAI_K
     client = OpenAI(api_key=settings.OPENAI_KEY)
     messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
+        # {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "system", "content": "your are a context aware search that runes the valid respose baste on the context given"},
         {"role": "user", "content": f"Context: {chunks}\n\nQuestion: {query}"}
     ]
 
@@ -76,11 +77,11 @@ def asking(request, text):
     fileEmbedings = Parsers(settings.OPENAI_KEY)
     query_vector = fileEmbedings.embedquerry(text)
 
-    k = system_file_parser(query_vector)
+    chunks, vectors = system_file_parser(query_vector)
 
-    # b = fileEmbedings.cosine_search(k[1], query_vector)
-    res = openaitest(k[0], text)
-    return HttpResponse(f"what ever you say bro -> {res}")
+    # b = fileEmbedings.cosine_search(chunks[1], query_vector)
+    res = context_aware_responses(chunks, text)
+    return HttpResponse(f"{res}")
 
 
 def save_file(uploaded_file):

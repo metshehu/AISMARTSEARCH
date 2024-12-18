@@ -28,6 +28,7 @@ SECRET_KEY = 'django-insecure-12)qzr@+vd$+cn_f20!yud2&)f^ghpau9n%87tar0s1lletp6-
 # Fetch the OpenAI API key from the environment
 
 OPENAI_KEY = os.environ.get('OPENAI_API_KEY')  # Define media settings
+print(OPENAI_KEY)
 if not OPENAI_KEY:
     raise ValueError(
         "OpenAI API key is not set. Please add it to your environment variables.")

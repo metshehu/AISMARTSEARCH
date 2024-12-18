@@ -10,6 +10,7 @@ load_dotenv()  # Load environment variables from .env file
 # Now you can access the variables like this:
 # "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" #
 endpoint = os.getenv("OPENAI_API_KEY")
+print(endpoint)
 llm = ChatOpenAI(
     api_key=endpoint
 )
