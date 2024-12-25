@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        {% load static %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Chat Window</title>
+        <link rel="stylesheet" href="{% static 'css/chat.css' %}">
+    </head>
+    <body>
+
+        <div class="struc">
+        <div class="chat-container">
+            <div class="chat-header">
+
+                <h3> {{dir}}</h3> 
+                <!-- going to be a img-->
+                <h2 class='h22'>Chat</h2>
+                <!-- going to be a img-->
+                <!-- More messages can be added here -->
+                <button class="settings-button">
+                    <div class="dot-wrapper">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </button>
+
+
+            </div>
+
+            <div>
+
+             </div>
+            <div class="chat-box">
+                <div class="message received">
+                    <p>Hello! How can I help you today?</p>
+                </div>
+                <div class="message sent">
+                    <p>{{answer}}</p>
+                </div>
+                <!-- More messages can be added here -->
+            </div>
+
+                <form method="post" class="chat-input">
+                    {% csrf_token %}
+
+                    <input type="text" name="question" placeholder="Type a message...">
+                    <button>Send</button>
+
+                </form>
+            </div>
+
+
+              <div class="vertical-line"></div>
+
+            <div class="fileupload-container">
+
+                <div class="fileupload-heder">
+
+                    <h3>File Upload</h3>
+                </div>
+
+                <div class="fileupload-body">
+                    {% for i in files%}
+                    <div class="filename_div">
+                        {{i}}
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+                <hr>
+                <div class='fileupload-footer'>
+
+            <a class="buttoncon" href="{% url 'save-files' mydir=dir%}">
+                    <button class="upload-button">UPLOAD</button>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </body>
+</html>
+
+<!-- Button with vertical dots -->
+

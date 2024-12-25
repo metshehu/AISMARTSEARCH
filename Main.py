@@ -91,12 +91,35 @@ class Parsers():
     def cosine_search(self, vectors, query_vector):
         vectors = np.array(vectors)
         query_vector = np.array(query_vector)
-
         query_vector = query_vector.reshape(1, -1)
         distances = cosine_similarity(vectors, query_vector)
-
         closest_index = np.argmax(distances)
         return closest_index
+
+    def similarity_percentage(self, x, y):
+        xn = min([x, y])
+        yn = max([x, y])
+        return (1 - abs(xn - yn) / abs(yn)) * 100
+
+    def cosine_search_top3(self, vectors, query_vector, threshold=20):
+        vectors = np.array(vectors)
+        query_vector = np.array(query_vector)
+        query_vector = query_vector.reshape(1, -1)
+        distances = cosine_similarity(vectors, query_vector)
+        closest_index = np.argmax(distances)
+        similarities = distances.flatten() * 100
+        # Reverse for descending order
+        sorted_indices = np.argsort(similarities)[::-1]
+        top_3_indices = [
+            i for i in sorted_indices if self.similarity_percentage(similarities[i], similarities[closest_index]) >= threshold][:3]
+        top_3_vectors = vectors[top_3_indices]
+        top_3_similarities = similarities[top_3_indices]
+        # print(top_3_vectors, " top 3 vectors")
+        # print("-"*20)
+        # print(top_3_similarities, " top 3 similierts")
+        # print("-"*20)
+
+        return top_3_indices
 
     def cosine_search_chunks(self, data, query_vector):
         chunks = data[0]
@@ -109,6 +132,7 @@ class Parsers():
 
 
 # ------------------------------------------------------------------------------------------------
+
 
     def Vectoraiz(self, file_path):
         self.file_contet = PyPDFLoader(file_path).load()

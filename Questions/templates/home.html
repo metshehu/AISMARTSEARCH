@@ -1,19 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Page Title</title>
-</head>
-<body>
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Window</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}" />
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="logo">
+        <img src="{% static 'staticphotos/Fyes10.png' %}" alt="My Image" />
+      </div>
 
-        <h1>hello this is from the django tamplates sick man </h1>
-        <h2>brooo this is kind of cool acully yooooo hehehe bro now i need to know how to send data to the templates how do you think i do that ????</h2>
-        {% for i in my_list%}
-        <h1>
-            {{i}}
-        </h1>
+      <h2>Select a Profile</h2>
 
-        {% endfor %}
-</body>
+      <div class="profiles">
+        {% for i in list%}
+        <div class="profile">
+            <a href="{% url 'chat' dir=i%}">
+            <img src="{% static 'staticphotos/Fyes10.png' %}" alt="My Image" />
+          </a>
+          <p>{{i}}</p>
+{
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

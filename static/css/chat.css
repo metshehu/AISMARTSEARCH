@@ -1,0 +1,207 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #aa9bfc;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.struc {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+.fileupload-container {
+  width: 20%;
+}
+.chat-container {
+  width: 100%; /* Increased width for larger layout */
+  height: 100%; /* Increased height for larger layout */
+  background-color: #aa9bfc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+.h22 {
+  position: absolute;
+  top: 2%;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+.fileupload-heder {
+  background-color: #664cf2;
+  display: flex;
+
+  justify-content: space-between;
+  color: white;
+  padding: 24px; /* Increased padding */
+  text-align: center;
+  font-size: 28px; /* Increased font size */
+  height: 88px;
+}
+/* Style for the button */
+.settings-button {
+  display: inline-flex; /* Centers dots */
+  justify-content: center;
+  align-items: center;
+  width: 40px; /* Adjust size as needed */
+  height: 40px;
+  border: 1px solid #664cf2;
+  border-radius: 50%; /* Makes it circular */
+  background-color: #664cf2;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s;
+}
+.vertical-line {
+  width: 1px; /* Thickness of the line */
+  height: 100%; /* Length of the line */
+  background-color: #333; /* Color of the line */
+}
+
+/* Hover effect */
+.settings-button:hover {
+  background-color: #e0e0e0;
+}
+
+.settings-button .dot {
+  width: 6px;
+  height: 6px;
+  background-color: #333;
+  border-radius: 50%;
+  margin: 4px 0; /* Adds vertical spacing */
+}
+
+.filename_div {
+  margin-bottom: 12px; /* Increased margin between messages */
+  max-width: 80%;
+  padding: 16px; /* Increased padding inside messages */
+  border-radius: 16px; /* Larger border radius */
+  color: white;
+  background-color: black;
+  margin-left: 10%;
+}
+.fileupload-footer {
+  width: 100%;
+  background-color: #aa9bfc;
+  height: 10%;
+  display: flex;
+  justify-content: center; /* Horizontal centering */
+  align-items: center; /* Vertical centering */
+  background-color: #aa9bfc;
+}
+.fileupload-body {
+  height: 80%;
+  background-color: #aa9bfc;
+  overflow-x: auto;
+}
+/* Stack dots vertically */
+.buttoncon{
+    width:100%;
+    height:100%;
+    margin-left:30%;
+}
+.dot-wrapper {
+  display: flex;
+  flex-direction: column; /* Stacks items vertically */
+  justify-content: center;
+  align-items: center;
+}
+.chat-header {
+  background-color: #664cf2;
+  display: flex;
+
+  justify-content: space-between;
+  color: white;
+  padding: 24px; /* Increased padding */
+  text-align: center;
+  font-size: 28px; /* Increased font size */
+}
+h1 {
+  margin-left: 35%;
+}
+.chat-box {
+  flex: 1;
+  padding: 24px; /* Increased padding */
+  overflow-y: auto;
+  background-color: #aa9bfc;
+}
+.upload-button {
+  margin-bottom: 24px; /* Increased margin between messages */
+  max-width: 80%;
+  padding: 16px; /* Increased padding inside messages */
+  border-radius: 16px; /* Larger border radius */
+  color: white;
+  background-color: black;
+  width: 50%;
+  margin-top: 20px;
+}
+.message {
+  margin-bottom: 24px; /* Increased margin between messages */
+  max-width: 80%;
+  padding: 16px; /* Increased padding inside messages */
+  border-radius: 16px; /* Larger border radius */
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background-color: #333; /* Color of the line */
+}
+.received {
+  background-color: black;
+  color: white;
+  width: 320px;
+  margin-left: 15%;
+  text-align: left;
+}
+
+.sent {
+  background-color: black;
+  color: white;
+  width: 320px;
+  margin-left: 60%;
+  text-align: right;
+}
+
+.chat-input {
+  display: flex;
+  padding: 24px; /* Increased padding */
+  background-color: #AA9BF;
+  color: white;
+  border-radius: 0 0 8px 8px;
+  width: 80%;
+  margin-left: 8%;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 16px; /* Increased padding */
+  border: 1px solid #ddd;
+  border-radius: 50px; /* Increased border radius */
+  margin-right: 16px; /* Increased margin */
+  font-size: 20px; /* Increased font size */
+}
+
+.chat-input button {
+  padding: 16px 24px; /* Increased padding */
+  background-color: black;
+  border: none;
+  border-radius: 8px; /* Increased border radius */
+  color: white;
+  cursor: pointer;
+  font-size: 18px; /* Increased font size */
+}
+
+.chat-input button:hover {
+  background-color: #9a88d8;
+}
