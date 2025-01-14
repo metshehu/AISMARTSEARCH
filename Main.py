@@ -31,8 +31,8 @@ def ReadFromFile(file_path):
 class Parsers():
     def __init__(self, apikey):
         self.apikey = apikey
-        self.splitter = RecursiveCharacterTextSplitter(
-            chunk_size=600, chunk_overlap=150, length_function=len)
+        self.splitter = TokenTextSplitter(
+            chunk_size=200, chunk_overlap=50, length_function=len)
         self.embedingAPI = OpenAIEmbeddings(
             openai_api_key=self.apikey, model="text-embedding-3-large")
 
@@ -101,25 +101,39 @@ class Parsers():
         yn = max([x, y])
         return (1 - abs(xn - yn) / abs(yn)) * 100
 
+    def cosine_search_top3_t(self, vectors, query_vector, threshold=20):
+        vectors = np.array(vectors)
+        query_vector = np.array(query_vector)
+        query_vector = query_vector.reshape(1, -1)
+        similarities = [cosine_similarity(
+            query_vector.reshape(1, -1), vec.reshape(1, -1)) for vec in vectors]
+
+        matching_indices = [i for i, sim in enumerate(
+            similarities) if sim >= threshold][:3]
+
+        return matching_indices
+
     def cosine_search_top3(self, vectors, query_vector, threshold=20):
         vectors = np.array(vectors)
         query_vector = np.array(query_vector)
         query_vector = query_vector.reshape(1, -1)
+
         distances = cosine_similarity(vectors, query_vector)
         closest_index = np.argmax(distances)
+
         similarities = distances.flatten() * 100
         # Reverse for descending order
         sorted_indices = np.argsort(similarities)[::-1]
         top_3_indices = [
             i for i in sorted_indices if self.similarity_percentage(similarities[i], similarities[closest_index]) >= threshold][:3]
-        top_3_vectors = vectors[top_3_indices]
-        top_3_similarities = similarities[top_3_indices]
         # print(top_3_vectors, " top 3 vectors")
         # print("-"*20)
         # print(top_3_similarities, " top 3 similierts")
         # print("-"*20)
-
-        return top_3_indices
+        similarities_score = 0
+        for i in top_3_indices:
+            similarities_score += distances[i]
+        return (top_3_indices, similarities_score)
 
     def cosine_search_chunks(self, data, query_vector):
         chunks = data[0]
@@ -132,7 +146,6 @@ class Parsers():
 
 
 # ------------------------------------------------------------------------------------------------
-
 
     def Vectoraiz(self, file_path):
         self.file_contet = PyPDFLoader(file_path).load()
@@ -148,43 +161,37 @@ class Parsers():
 
 
 if __name__ == "__main__":
-    _ = load_dotenv(find_dotenv())
+    num_samples = 100
+    dimensionality = 5
 
-    client = OpenAI(
-        api_key=os.getenv("OPENAI_API_KEY")
-    )
+    data = np.random.rand(num_samples, dimensionality)
+    query_vector = np.random.rand(dimensionality)
 
-    # Load a PDF document
-    loader = PyPDFLoader("01_BIA_Njoftimi me Lenden - Syllabusi.pdf")
-    file_contet = loader.load()
-    # text_splitter = CharacterTextSplitter(
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=600, chunk_overlap=150, length_function=len
-    )
-    docs = text_splitter.split_documents(file_contet)
-    db = Chroma.from_documents(docs, OpenAIEmbeddings())
+# Calculate cosine similarities between the query vector and the dataset
+    similarities = cosine_similarity(data, [query_vector])
 
-    query = "importen things"
-    vectorEmbedQuery = OpenAIEmbeddings().embed_query(query)
-    answer = db.similarity_search_by_vector(vectorEmbedQuery)
-#    print(vectorEmbedQuery)
+# Find the most similar vector
+    most_similar_index = np.argmax(similarities)
+    most_similar_vector = data[most_similar_index]
 
-    a = Parsers(os.getenv("OPENAI_API_KEY"),
-                "01_BIA_Njoftimi me Lenden - Syllabusi.pdf", text_splitter)
-    a.Vectoraiz()
-    answer2 = a.querry(query)
-    # for i in answer:
-    # for i in answer:
-    # for i in answer:
-    # print(i.page_content)
-    # print("-----------------")
+    print(similarities)
+# Calculate Euclidean distances between the query vector and the dataset
 
-    # PandasSave(vectorEmbedQuery)
-    # a = ReadFromFile('vector2.csv')
-    # for i in answer2:
-    #    print(i.page_content)
-    #    print('1')
-    # print("-----------------")
+# Find the closest vector
+
+# for i in answer:
+
+# for i in answer:
+# for i in answer:
+# print(i.page_content)
+# print("-----------------")
+
+# PandasSave(vectorEmbedQuery)
+# a = ReadFromFile('vector2.csv')
+# for i in answer2:
+#    print(i.page_content)
+#    print('1')
+# print("-----------------")
 
 # print(a)
 # If it's a list or numpy array

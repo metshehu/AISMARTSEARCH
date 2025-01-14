@@ -1,31 +1,29 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    {% load static %}
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat Window</title>
-    <link rel="stylesheet" href="{% static 'css/home.css' %}" />
-  </head>
-  <body>
-    <div class="login-container">
-      <div class="logo">
-        <img src="{% static 'staticphotos/Fyes10.png' %}" alt="My Image" />
-      </div>
+<head>
 
-      <h2>Select a Profile</h2>
+        {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix User Selection</title>
 
-      <div class="profiles">
-        {% for i in list%}
-        <div class="profile">
-            <a href="{% url 'chat' dir=i%}">
-            <img src="{% static 'staticphotos/Fyes10.png' %}" alt="My Image" />
-          </a>
-          <p>{{i}}</p>
-{
-          {% endfor %}
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+   <div class="container">
+        <div class="select-list">
+                {% for user, photo in combined %}
+                <a href="/chat/{{ user }}" class="user-card">
+
+                    <img src="{% static 'userphotos/'|add:photo %}" alt="{{ user }}" class="user-photo">
+                    <div class="user-name">{{ user }}</div>
+                </a>
+            {% endfor %}
+
+            <a class="add-button" href="{% url 'makedir' %}">+</a>
+ 
         </div>
-      </div>
     </div>
-  </body>
+    </body>
 </html>
+

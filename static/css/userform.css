@@ -1,0 +1,80 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #aa9bfc;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Form container */
+.container {
+  background-color: black;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  text-align: center;
+}
+
+/* Header styling */
+.container h2 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #444;
+}
+
+/* Form groups */
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+  display: flex;
+}
+
+/* Labels */
+label {
+  display: block;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+  width: 500px;
+}
+
+/* Input fields */
+input[type="text"],
+input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: #fefefe;
+}
+
+/* Input focus */
+input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Submit button */
+button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+}
+
+button:hover {
+  background-color: #0056b3;
+}

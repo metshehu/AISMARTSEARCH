@@ -1,3 +1,68 @@
 body {
-  background-color: AA9BFC;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #aa9bfc;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.select-list {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  gap: 10px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-card {
+  background-color: #333;
+  color: #fff;
+  padding: 15px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: center;
+  width: 120px;
+}
+
+.user-card:hover {
+  background-color: #555;
+}
+
+.user-photo {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.user-name {
+  font-size: 14px;
+  text-align: center;
+}
+
+.add-button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 15px 25px;
+  cursor: pointer;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 90px;
+}
+
+.add-button:hover {
+  background-color: #0056b3;
 }
