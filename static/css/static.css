@@ -1,68 +1,62 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background-color: #aa9bfc;
-  color: #333;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #aa9bfc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
-/* Container for the form */
-.file {
-  width: 50%;
-  margin-left: 22%;
-}
-.container {
-  background-color: black;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 400px;
-  text-align: center;
+.form-container {
+    background-color: black;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
 }
 
-/* Header styling */
-.container h2 {
-  margin-bottom: 20px;
-  font-size: 1.5rem;
-  color: #555;
+h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
 }
 
-/* File input field */
-.form-control-file {
-  display: block;
-  width: 100%;
-  margin-bottom: 20px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-  color: #555;
-  background-color: #fff;
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
 }
 
-/* File input hover and focus states */
-.form-control-file:hover,
-.form-control-file:focus {
-  border-color: #888;
-  outline: none;
+input[type="file"] {
+    display: block;
+    margin: 10px 0;
+    padding: 8px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color:white;
 }
 
-/* Submit button */
-button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
+.submit-btn {
+    margin-top: 20px;
+    background-color: #664CF2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
 }
 
-button:hover {
-  background-color: #0056b3;
+.submit-btn:hover {
+    background-color: #45a049;
 }
+

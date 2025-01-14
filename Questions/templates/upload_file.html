@@ -1,14 +1,26 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Upload File</title>
-</head>
+<html lang="en">
+    <head>
+
+        {% load static %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Chat Window</title>
+        <link rel="stylesheet" href="{% static 'css/userform.css' %}">
+    </head>
+
 <body>
-    <h1>Upload a File</h1>
-    <form method="POST" enctype="multipart/form-data">
-        {{ form.as_p }}
-        <button type="submit">Upload</button>
-    </form>
+    <div class="form-container">
+        <h1>Create Directory</h1>
+        <form action="/create-directory/" method="POST" enctype="multipart/form-data">
+            <label for="name" class="form-label">Directory Name</label>
+            <input type="text" id="name" name="name" required maxlength="255">
+            
+            <label for="photo" class="form-label">Upload Photo</label>
+            <input type="file" id="photo" name="photo" accept="image/*" required>
+            
+            <button type="submit" class="submit-btn">Create Directory</button>
+        </form>
+    </div>
 </body>
 </html>
-

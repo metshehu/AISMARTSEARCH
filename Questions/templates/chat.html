@@ -11,37 +11,39 @@
     <body>
 
         <div class="struc">
-        <div class="chat-container">
-            <div class="chat-header">
+            <div class="chat-container">
+                <div class="chat-header">
 
-                <h3> {{dir}}</h3> 
-                <!-- going to be a img-->
-                <h2 class='h22'>Chat</h2>
-                <!-- going to be a img-->
-                <!-- More messages can be added here -->
-                <button class="settings-button">
-                    <div class="dot-wrapper">
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
+                    <h3> {{dir}}</h3> 
+                    <!-- going to be a img-->
+                    <h2 class='h22'>Chat</h2>
+                    <!-- going to be a img-->
+                    <!-- More messages can be added here -->
+                    <button class="settings-button">
+                        <div class="dot-wrapper">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </button>
+
+
+                </div>
+
+                <div>
+
+                </div>
+                <div class="chat-box">
+                    {% for question, answers in combined %}
+
+                    <div class="message received">
+                        <p>{{question}}</p>
                     </div>
-                </button>
-
-
-            </div>
-
-            <div>
-
-             </div>
-            <div class="chat-box">
-                <div class="message received">
-                    <p>Hello! How can I help you today?</p>
+                    <div class="message sent">
+                        <p>{{answers}}</p>
+                    </div>
+                    {%endfor%}
                 </div>
-                <div class="message sent">
-                    <p>{{answer}}</p>
-                </div>
-                <!-- More messages can be added here -->
-            </div>
 
                 <form method="post" class="chat-input">
                     {% csrf_token %}
@@ -52,8 +54,7 @@
                 </form>
             </div>
 
-
-              <div class="vertical-line"></div>
+            <div class="vertical-line"></div>
 
             <div class="fileupload-container">
 
@@ -74,13 +75,26 @@
                 <hr>
                 <div class='fileupload-footer'>
 
-            <a class="buttoncon" href="{% url 'save-files' mydir=dir%}">
-                    <button class="upload-button">UPLOAD</button>
+                    <a class="buttoncon" href="{% url 'save-files' mydir=dir%}">
+                        <button class="upload-button">UPLOAD</button>
                     </a>
                 </div>
 
             </div>
         </div>
+
+        <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const chatBoxes = document.querySelectorAll('.chat-box');
+    chatBoxes.forEach(chatBox => {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+});
+
+
+
+</script>
+
 
     </body>
 </html>

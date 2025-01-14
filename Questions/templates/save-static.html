@@ -1,14 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Upload File</title>
-</head>
-<body>
-    <h1>Test static Saves a File</h1>
+<!doctype html>
+<html lang="en">
+  <head>
+        {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Upload Form</title>
+    <link rel="stylesheet" href="{% static 'css/static.css' %}" />
+  </head>
+  <body>
+    <div class="form-container">
+      <h1>Upload File</h1>
     <form method="POST" enctype="multipart/form-data">
-        {{ form.as_p }}
-        <button type="submit">Upload</button>
-    </form>
-</body>
+        <label for="file" class="form-label">Upload File</label>
+        <input type="file" id="file" name="file" required />
+        <button type="submit" class="submit-btn">Submit</button>
+      </form>
+    </div>
+  </body>
 </html>
-

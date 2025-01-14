@@ -218,13 +218,14 @@ def chat(request, dir):
             sender=dir, question=text, respons=responds)
         chat_message.save()
     files = allFileformat(mypath, '.pdf')
+    for i in History.objects.all():
+        print(i.sender)
     combined = user_history(dir)
     context = {
         'dir': dir,
         'answer': responds,
         'files': files,
         'combined': combined
-
     }
     return render(request, 'chat.html', context)
 
