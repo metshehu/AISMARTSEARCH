@@ -5,27 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Netflix User Selection</title>
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/manage-users.css' %}">
 </head>
 <body>
    <div class="container">
         <div class="select-list">
             {% for user, photo in combined %}
-                <a href="/chat/{{ user }}" class="user-card">
+                <a href="/Manage-User/{{ user }}" class="user-card">
                     <img src="{% static 'userphotos/'|add:photo %}" alt="{{ user }}" class="user-photo">
                     <div class="user-name">{{ user }}</div>
                 </a>
             {% endfor %}
 
+            <a class="add-button" href="{% url 'makedir' %}">+</a>
         </div>
-  
+        
         <!-- Manage Users button -->
-        <div class="manage-users-container">
-            <a class="manage-users-button" href="/Manage-Users" >Manage Users</a>
-        </div>
     </div>
 </body>
 </html>
-
 
 

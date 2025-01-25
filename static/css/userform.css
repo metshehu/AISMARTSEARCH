@@ -6,7 +6,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #AA9BFC;
+    background-color: #6962ad;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,6 +17,7 @@ body {
     background-color: black;
     padding: 20px;
     border-radius: 8px;
+    border-color:black;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: 300px;
     text-align: center;
@@ -25,29 +26,40 @@ body {
 h1 {
     margin-bottom: 20px;
     font-size: 24px;
-    color: #333;
+    color: #483d8b;
 }
 
 .form-label {
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
-    color: #555;
+    color: #6a5acd;
 }
 
-input[type="text"],
+input[type="text"]{
+    display: block;
+    margin: 10px 0;
+    padding: 8px;
+    width: 100%;
+    color:black;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+
 input[type="file"] {
     display: block;
     margin: 10px 0;
     padding: 8px;
     width: 100%;
+    color:#483d8b;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
 .submit-btn {
     margin-top: 20px;
-    background-color: #664CF2;
+    background-color: #6a5acd;
     color: white;
     border: none;
     padding: 10px 20px;

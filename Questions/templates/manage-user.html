@@ -1,0 +1,19 @@
+<html lang="en">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Netflix User Selection</title>
+    <link rel="stylesheet" href="{% static 'css/manage-user.css' %}" />
+  </head>
+  <body>
+    <h1>Create New Entry</h1>
+    <form method="post">
+      {% csrf_token %} {{ form.as_p }}
+      <div class="button-container">
+        <button type="submit" class="submit-button">Submit</button>
+        <a href="/delete-user/{{ user }}" class="delete-button">Delete</a>
+      </div>
+    </form>
+  </body>
+</html>

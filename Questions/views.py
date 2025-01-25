@@ -1,5 +1,6 @@
 import collections
 import os
+import shutil
 from itertools import chain
 from os import walk
 from pathlib import Path
@@ -13,8 +14,8 @@ from openai import OpenAI
 
 from Main import Parsers
 
-from .forms import FileUploadForm, MakeDirForm
-from .models import History
+from .forms import FileUploadForm, MakeDirForm, UserValueForm
+from .models import History, UserValues
 
 """
 Need to refactor the code and remvoe fileEmbedings lot of shit just rember to do this this week sundaytusday
@@ -58,9 +59,44 @@ def allFileformat(mypath, format):
     return files
 
 
+def remove_csv(user):
+    user_path = settings.STATIC_UPLOAD_DIR+f'/{user}'
+
+    files = allFileformat(user_path, '.csv')
+
+    for i in files:
+        newpath = user_path+f'/{i}'
+        if os.path.exists(newpath):
+            os.remove(newpath)
+            print(f"File '{newpath}' has been deleted.")
+        else:
+            print(f"File '{newpath}' does not exist.")
+
+
+def reembedfiles(user):
+
+    user_path = settings.STATIC_UPLOAD_DIR+f'/{user}'
+    user_value = UserValues.objects.filter(user=user).first()
+    parser = Parsers(settings.OPENAI_KEY)
+    spliter = user_value.splitter
+    chunksize = user_value.chunksize
+    overlap = user_value.overlap
+    parser.SetSpliter(spliter=spliter, chuncksize=chunksize, overlap=overlap)
+
+    remove_csv(user)
+
+    files = allFileformat(user_path, '.pdf')
+    for file_name in files:
+        file_url = f"{settings.STATIC_UPLOAD_DIR}/{user}/{file_name}"
+        fileChunks, fileEmbedings = parser.embedd(file_url)
+        parser.SaveCsv(settings.STATIC_UPLOAD_DIR+'/'+user,
+                       file_name[:-4], fileEmbedings, fileChunks)
+
+
 def ogsystem_file_parser(querry_vector, mydir):
     mypath = settings.STATIC_UPLOAD_DIR+'/'+mydir+'/'
     parser = Parsers(settings.OPENAI_KEY)
+
     vectorlist = []
     chunkslist = []
     files = allFileformat(mypath, '.csv')
@@ -82,7 +118,8 @@ def addfiledata(dic, file_name, chunks, vectors, sim_score):
 
 def system_file_parser(querry_vector, mydir):
     mypath = settings.STATIC_UPLOAD_DIR+'/'+mydir+'/'
-    parser = Parsers(settings.OPENAI_KEY)
+    parser = Parsers(settings.OPENAI_KEY)  # ✅
+
     vectorlist = []
     chunkslist = []
     files = allFileformat(mypath, '.csv')
@@ -91,11 +128,15 @@ def system_file_parser(querry_vector, mydir):
         chunks, vectors = parser.ReadFromFile(mypath + i)
         # closest_index = parser.cosine_search(vectors, querry_vector)
         top3, similariti_score = parser.cosine_search_top3(
-            vectors, querry_vector, 80)
+            vectors, querry_vector, 30)
         for j in top3:
             chunkslist.append(chunks[j])
             vectorlist.append(vectors[j])
-        addfiledata(files_data, i, chunkslist, vectorlist, similariti_score)
+        if (len(chunkslist) > 0):
+            addfiledata(files_data, i, chunkslist,
+                        vectorlist, similariti_score)
+
+            # print(files_data[i]['chunks'], files_data[i]['score'])
 
         chunkslist = []
         vectorlist = []
@@ -114,6 +155,29 @@ def system_file_parser(querry_vector, mydir):
     return (top_10_chunks, top_10_vectors, sorted_files_dict)
 
 
+def addContextother(data, messages):
+    """
+    Adds context to the messages by iterating through the given data.
+    """
+    for filename, file_data in data.items():
+        # Concatenate chunks from the file
+        text = "\n".join(file_data.get('chunks', []))
+
+        # Add a strict instruction regarding the use of this context
+        new_entry = {
+            "role": "system",
+            "content": (
+                f"The following file: '{
+                    filename}' contains the relevant information: \n"
+                f"```text\n{text}\n```\n"
+                "You must strictly rely on this information to answer questions. "
+                "If this context is insufficient to answer the question, respond with: "
+                "'The context does not contain sufficient information to answer this question.'"
+            )
+        }
+        messages.append(new_entry)
+
+
 def addContext(data, message):
     for i in data:
         print(i+'-'*20)
@@ -128,41 +192,88 @@ def addContext(data, message):
         message.append(newdic)
 
 
-def context_aware_responses(chunks, query, Question_history, Answer_history, data):
-    # openai.api_key = settings.OPENAI_K
-    client = OpenAI(api_key=settings.OPENAI_KEY)
-    messages = [
-        # {"role": "system", "content": "You are answers helpful assistant."},
-        {"role": "system", "content": "your are answers context aware search that retruns the valid respose baste on the context given baste on the Question and use users Past Question and Answers ans a sorce as well to get context"},
-        {"role": "user", "content": f"Context: {chunks}\n\nQuestion: {
-            query}\n\n Past Questino:{Question_history}\n\n past Answer:{Answer_history}"},
+def addHistory(question_history, answer_history, message):
+    # Limit to the last 10 interactions for brevity
+    question_history = question_history[-10:]
+    answer_history = answer_history[-10:]
 
+    # Combine questions and answers into the message
+    for index, (q, a) in enumerate(zip(question_history, answer_history)):
+        question_entry = {
+            "role": "user",
+            "content": f"Past Question {index + 1}: {q}"
+        }
+        answer_entry = {
+            "role": "assistant",
+            "content": f"Past Answer {index + 1}: {a}"
+        }
+        message.append(question_entry)
+        message.append(answer_entry)
+
+
+# def addHistroy(question_history, answer_histry, message):
+#    index = 0
+#    question_history = question_history[-10:]
+#    answer_histry = answer_histry[-10:]
+
+# for q, a in zip(question_history, answer_histry):
+#        question_dic = {
+#            "role": "user", "content": f" this is a past question number {index} {q}"}
+#        answer_dic = {"role": "assistant",
+#                      "content": f" this is a past answer for question number {index} {a}"}
+
+#        message.append(question_dic)
+#        message.append(answer_dic)
+#        index += 1
+
+def gettemp(user):
+    return UserValues.objects.filter(user=user).first().temp
+
+
+def context_aware_responses(query, Question_history, Answer_history, data, user):
+    # openai.api_key = settings.OPENAI_K
+    temp = gettemp(user)
+    client = OpenAI(api_key=settings.OPENAI_KEY)
+    print(query, "this is querry", "-"*100)
+    if (len(data) == 0):
+        return "The context does not contain sufficient information to answer this question.--2"
+
+    messages = [
+        {"role": "system", "content": (
+            "You are a context-aware search engine. You must return responses **only** based on the provided context  and the user's past interactions. "
+            #            "You are not allowed to infer or assume answers if the context does not provide sufficient information. "
+            #            "If the context does not contain sufficient information to answer the question, respond only with: "
+            #            "'The context does not contain sufficient information to answer this question.' "
+            #            "Do not provide additional information, guesses, or speculative answers."
+        )},
+        {"role": "user", "content": f"current Question: {query}"},
     ]
+
+    # {"role": "user", "content": f"Context: {chunks}\n\nQuestion: {  # remove the cuhnks cus it allred add
+    #    query}\n\n Past Questino:{Question_history}\n\n past Answer:{Answer_history}"},
+    # past quest/ answer make it add context insted of dumping data
+    addHistory(Question_history, Answer_history, messages)
+
+    print('-'*100)
+
+    print(len(data))
+    print('<>'*50)
+    for i in data:
+        print(data[i]['chunks'])
+        print(len(data[i]['chunks']))
+        print(data[i]['score'])
+    print('-'*100)
     addContext(data, messages)
     response = client.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4o",
         messages=messages,
-        max_tokens=150  # test on the higer end to the lowest 50-600
+        max_tokens=300,  # test on the higer end to the lowest 50-600
+        temperature=temp,  # Strict and deterministic responses
+
     )
     response_message = response.choices[0].message.content
     return response_message
     # return response['choices'][0]['message']['content'].strip()
-
-
-def front(request, mydir):
-
-    answers = getalldirs(settings.STATIC_UPLOAD_DIR)
-    l = []
-    for i in answers:
-        l.append(allFileformat(settings.STATIC_UPLOAD_DIR+'/'+i, '.pdf'))
-    b = allFileformat(settings.STATIC_UPLOAD_DIR+'/'+mydir, '.csv')
-    c = allFileformat(settings.STATIC_UPLOAD_DIR+'/'+mydir, '.pdf')
-    context = {
-        'list': answers,
-        'filescsv': b,
-        'filespdf': l
-    }
-    return render(request, 'home.html', context)
 
 
 def asking(request, mydir, text):
@@ -186,14 +297,87 @@ def unpack_history(history):
     return (question, answers)
 
 
-def asking_normal(mydir, text):
+def delet_path(user):
+    path = os.path.join(settings.STATIC_UPLOAD_DIR, user)
+    if os.path.exists(path) and os.path.isdir(path):
+        shutil.rmtree(path)
+        print(f"Directory '{path}' deleted successfully.")
+    else:
+        print(f"Directory '{path}' does not exist.")
+
+
+def delet_photo(user):
+    user_photos_path = os.path.join(
+        settings.BASE_DIR, 'static/userphotos', f'{user}.png')
+    if os.path.exists(user_photos_path):
+        os.remove(user_photos_path)
+        print(f"File '{user_photos_path}' has been deleted.")
+    else:
+        print(f"File '{user_photos_path}' does not exist.")
+
+
+def delet_user(request, user):
+    find = UserValues.objects.filter(user=user)
+    find.delete()
+    userHistoy = History.objects.filter(sender=user)
+    userHistoy.delete()
+
+    users = getalldirs(settings.STATIC_UPLOAD_DIR)
+
+    if (user in users):
+        index = users.index(user)
+        wanted_users = users[index]
+        delet_path(wanted_users)
+        delet_photo(user)
+    return redirect('/')
+
+
+def manage_user(request, user):
+    if request.method == 'POST':
+        form = UserValueForm(request.POST)
+        if form.is_valid():  # Validate the form first
+            find = UserValues.objects.filter(user=user)
+            find.delete()
+            chat_message = UserValues(
+                user=user,
+                splitter=form.cleaned_data['splitter'],
+                chunksize=form.cleaned_data['chunksize'],
+                overlap=form.cleaned_data['overlap'],
+                temp=form.cleaned_data['temp']
+            )
+            chat_message.save()
+            reembedfiles(user)
+        return redirect(f'/chat/{user}')
+    else:
+        form = UserValueForm()
+
+    context = {'user': user, 'form': form}
+    return render(request, 'manage-user.html', context)
+
+
+def manage_users(request):
+    mypath = settings.STATIC_UPLOAD_DIR
+    upload_dir = os.path.join(settings.BASE_DIR, 'static/userphotos')
+    users = getalldirs(mypath)
+    userphotos = allFileformat(upload_dir, '.png')
+    userphotos.sort()
+    users.sort()
+    combined = zip(users, userphotos)
+    context = {
+        'combined': combined
+    }
+
+    return render(request, 'manage-users.html', context)
+
+
+def asking_normal(mydir, query):
     fileEmbedings = Parsers(settings.OPENAI_KEY)
-    query_vector = fileEmbedings.embedquerry(text)
+    query_vector = fileEmbedings.embedquerry(query)
     chunks, vectors, all_data = system_file_parser(query_vector, mydir)
     history = user_history(mydir)
     pastQuestion, pastAnswe = unpack_history(history)
     res = context_aware_responses(
-        chunks, text, pastQuestion, pastAnswe, all_data)
+        query, pastQuestion, pastAnswe, all_data, mydir)
     return res
 
 
@@ -218,8 +402,6 @@ def chat(request, dir):
             sender=dir, question=text, respons=responds)
         chat_message.save()
     files = allFileformat(mypath, '.pdf')
-    for i in History.objects.all():
-        print(i.sender)
     combined = user_history(dir)
     context = {
         'dir': dir,
@@ -237,7 +419,6 @@ def home(request):
     userphotos = allFileformat(upload_dir, '.png')
     userphotos.sort()
     users.sort()
-
     combined = zip(users, userphotos)
     context = {
         'combined': combined
@@ -277,10 +458,11 @@ def makedirForm(request):
             photo = form.cleaned_data['photo']  # The uploaded image file
 
             makedir(dirname)
+            print(dirname)
 
             photoname = dirname+photo.name[-4:]
             uploadphoto(photoname, photo)
-            return redirect(f"/chat/{dirname}/")
+            return redirect(f"/Manage-User/{dirname}")
     form = MakeDirForm()
     return render(request, 'upload_file.html', {'form': form})
     # return render(request,'home.html')
@@ -294,6 +476,14 @@ def save_file(uploaded_file, dir):
 
     file_url = f"{settings.STATIC_UPLOAD_DIR}/{dir}/{uploaded_file.name}"
     parser = Parsers(settings.OPENAI_KEY)
+    user_value = UserValues.objects.filter(user=dir).first()
+    spliter = user_value.splitter
+    chunksize = user_value.chunksize
+    overlap = user_value.overlap
+    print(f'info about user {dir} chunksize {
+          chunksize} overlap {overlap} spliter {spliter}')
+    parser.SetSpliter(spliter=spliter, chuncksize=chunksize, overlap=overlap)
+
     fileChunks, fileEmbedings = parser.embedd(file_url)
     parser.SaveCsv(settings.STATIC_UPLOAD_DIR+'/'+dir,
                    uploaded_file.name[:-4], fileEmbedings, fileChunks)

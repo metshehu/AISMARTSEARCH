@@ -1,0 +1,64 @@
+[
+  {
+    "role": "system",
+    "content": "You are a context-aware search engine that returns valid responses based on the given context and utilizes the user's past questions and answers as a source to understand context better."
+  },
+  {
+    "role": "user",
+    "content": {
+      "context": [
+        "Komunikimi ndërmjet aplikacioneve softuerike të ndërtuara në platforma të ndryshme me ndihmën e Shërbimeve Ueb",
+        "Që dy aplikacione të komunikojnë me sukses duhet që së pari të plotësohen disa kushte:",
+        "- Duhet të ekzistojë lidhja fizike;",
+        "- Duhet të ekzistojë një “marrëveshje” në lidhje me formatin e shkëmbimit të të dhënave si p.sh. nëse duhet të bëhet me XML apo diçka tjetër;"
+      ],
+      "question": "Komunikimi ndërmjet aplikacioneve",
+      "past_question": ["Komunikimi ndërmjet aplikacioneve"],
+      "past_answer": [
+        "The communication between software applications built on different platforms is accomplished with the help of Web Services. For two applications to communicate successfully, several conditions must be met:",
+        "- There must be a physical connection;",
+        "- There must be an 'agreement' regarding the format of data exchange, such as whether it should be done with XML or something else;",
+        "This communication can be depicted with the exchange of information between .NET and JAVA via XML as shown in some diagrams in the text.",
+        "Moreover, it can also comprise different systems connected on a board (such as the Arduino board), using appropriate pins. These systems can be programmed (in C language) via USB or serial port for the realization of the appropriate function. Bluetooth and WiFi integrated systems like ESP32 can"
+      ]
+    }
+  },
+  {
+    "role": "system",
+    "content": "The following file: 'Ueb Sherbimet Ueb APIS -L6.csv' contains the following relevant information to support the answer:\n```
+        text\n
+        Komunikimi ndërmjet aplikacioneve softuerike të ndërtuara në
+        \nplatforma të ndryshme me ndihmën e Shërbimeve Ueb
+        \n1\nQë dy aplikacione të komunikojnë me sukses duhet që së pari të plotësohen disa kushte:\n- Duhet të ekzistojë lidhja fizike;\n- Duhet të ekzistojë një 'marrëveshje' në lidhje me formatin e shkëmbimit të të dhënave si p.sh. nëse duhet të bëhet me XML apo diçka tjetër;\n- Duhet që t```\
+        n```text\n
+        Komunikimi ndërmjet aplikacioneve softuerike të ndërtuara në
+        \nplatforma të ndryshme me ndihmën e Shërbimeve Ueb
+        \nFig 3 Shkëmbimi i informacioneve .NET në JAVA```\
+        n```text\n
+        XML
+        \nAplikacioni 2 Aplikacioni 1
+        \nKomunikimi ndërmjet aplikacioneve softuerike të ndërtuara në\nplatforma të ndryshme me ndihmën e Shërbimeve Ueb\n2\nFig 1. Shkëmbimi i informacioneve ndërmjet dy aplikacioneve përmes XML```"
+  
+    },
+  {
+    "role": "system",
+    "content": "The following file: 'Week4.csv' contains the following relevant information to support the answer:\n```
+        text\n
+        Disa aspekte el. në punë me A. pllakën (2)
+        \n- Tensioni matet midis një pike të duhur, p.sh. Output pin dhe masës (GND - Ground).
+        \n- Sipas ligjit të Ohmit, rryma është I=U/R, ku R është rezistenca përkatëse ndërsa U është tensioni.
+        \n- Nëse midis dy pikave në qark nuk ka rezistencë => lidhje e shkurtër (R~0).\n- Nëse dy pika të potencialit të ndryshëm në Arduino i lidhim...\n```"
+    
+    },
+  {
+    "role": "system",
+    "content": "The following file: 'SISTEMET E PROCESIMIT TE TE DHENAVE DIZAJNUESE.csv' contains the following relevant information to support the answer:\n```
+        text\n
+        Jetet e përpunimit të të dhënave për të zgjidhur problemet praktike.
+        \n- Përmbajtja 15 Jave Plani shpërndahet në 6 njësi:
+        \n- Njësia 1: Hyrje (Mjetet e zbulimit të njohurive, fazat e përpunimit të të dhënave).
+        \n- Njësia 2: Depot e të dhënave (data warehouses) (Historia, OLTP vs OLAP, modelet e data warehouses, operacionet OLAP).
+        \n- Njësia 3: Parapërpunimi i të dhënave (Sfidat, teknikat dhe mjetet për pastrimin e të dhënave).
+        \n- Njësia 4: Parapërpunimi i të dhënave (Virtualizimi, integrimi, diskretimi, normalizimi, cilësia e të dhënave).\n```"
+    }
+]

@@ -2,206 +2,421 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 body {
-  background-color: #aa9bfc;
-  font-family: Arial, sans-serif;
+  background-color: #f3f4f6;
+  color: #333;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.struc {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.chat-container {
+  position: relative; /* Ensure the container is the reference for absolute positioning */
+
+  display: flex;
+  flex-direction: column;
+  flex: 5;
+}
+/* General Styling */
+body {
+  background-color: #2e0d3b; /* Dark purple */
+  font-family: "Poppins", sans-serif;
+  color: #fff;
+  margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
-.struc {
-  width: 100%;
-  height: 100%;
-  display: flex;
-}
 .fileupload-container {
-  width: 20%;
-}
-.chat-container {
-  width: 100%; /* Increased width for larger layout */
-  height: 100%; /* Increased height for larger layout */
-  background-color: #aa9bfc;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-}
-.h22 {
-  position: absolute;
-  top: 2%;
-  left: 50%;
-  transform: translate(-50%);
-}
-
-.fileupload-heder {
-  background-color: #664cf2;
-  display: flex;
-
-  justify-content: space-between;
-  color: white;
-  padding: 24px; /* Increased padding */
   text-align: center;
-  font-size: 28px; /* Increased font size */
-  height: 88px;
 }
-/* Style for the button */
-.settings-button {
-  display: inline-flex; /* Centers dots */
+
+/* Underline Styling */
+.fileupload-container .underline {
+  position: relative;
+  display: inline-block;
+  font-weight: 500;
+  font-size: 1.5rem; /* Adjust size if needed */
+  color: #ccc; /* Text color */
+  margin-bottom: 1rem;
+}
+
+.fileupload-container .underline::after {
+  content: "";
+  position: absolute;
+  bottom: -5px; /* Adjust distance from text */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%; /* Adjust underline width */
+  height: 2px; /* Adjust underline thickness */
+  background-color: #aaa; /* Adjust underline color */
+  border-radius: 2px; /* Add rounded corners to the line */
+}
+
+/* File Grid */
+.file-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(120px, 1fr)
+  ); /* Flexible grid for responsive layout */
+  gap: 10px; /* Space between items */
+  justify-content: center; /* Center the grid in the container */
+  align-items: start; /* Align items to the top */
+  padding: 10px; /* Optional: Add some padding around the grid */
+}
+/* Individual File Block */
+.file {
+  background-color: #ccc;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #333;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  max-width: 120px; /* Ensure consistent file block size */
+  max-height: 150px; /* Maintain consistent height */
+}
+.file img {
+  max-width: 40px;
+  margin-bottom: 0.5rem;
+}
+
+.file p {
+  margin: 0;
+  overflow: hidden; /* Hide any overflowing text */
+  text-overflow: ellipsis; /* Add ellipsis when text overflows */
+  width: 100%; /* Ensure the width is controlled */
+  display: inline-block;
+}
+
+/* Highlighted File */
+.file.highlighted {
+  border: 2px solid #0056ff; /* Blue border */
+  background-color: #eaf4ff; /* Light blue background */
+  color: #0056ff; /* Blue text */
+}
+.file.add {
+  background-color: #d9d9d9;
+  font-size: 2rem;
+  font-weight: bold;
+  display: flex;
   justify-content: center;
   align-items: center;
-  width: 40px; /* Adjust size as needed */
-  height: 40px;
-  border: 1px solid #664cf2;
-  border-radius: 50%; /* Makes it circular */
-  background-color: #664cf2;
+  color: #555;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.2s;
+  min-height: 150px; /* Match other file blocks' height */
 }
-.vertical-line {
-  width: 1px; /* Thickness of the line */
-  height: 100%; /* Length of the line */
-  background-color: #333; /* Color of the line */
+.file.add:hover {
+  background-color: #c1c1c1; /* Slightly darker gray on hover */
 }
 
-/* Hover effect */
-.settings-button:hover {
-  background-color: #e0e0e0;
+/* Hover Effect for File */
+.file:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.settings-button .dot {
-  width: 6px;
-  height: 6px;
-  background-color: #333;
-  border-radius: 50%;
-  margin: 4px 0; /* Adds vertical spacing */
+.underline {
+  position: relative;
+  display: inline-block;
+  font-weight: 500;
+  font-size: 1.5rem; /* Adjust size if needed */
+  color: #ccc; /* Text color */
+  text-align: center;
 }
 
-.filename_div {
-  margin-bottom: 12px; /* Increased margin between messages */
-  max-width: 80%;
-  padding: 16px; /* Increased padding inside messages */
-  border-radius: 16px; /* Larger border radius */
-  color: white;
-  background-color: black;
-  margin-left: 10%;
+.underline::after {
+  content: "";
+  position: absolute;
+  bottom: -5px; /* Adjust distance from text */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%; /* Adjust underline width */
+  height: 2px; /* Adjust underline thickness */
+  background-color: #aaa; /* Adjust underline color */
+  border-radius: 2px; /* Add rounded corners to the line */
 }
-.fileupload-footer {
-  width: 100%;
-  background-color: #aa9bfc;
-  height: 10%;
+
+/* Highlighted File */
+.highlighted {
+  border: 2px solid #0056ff; /* Blue border */
+  background-color: #e7f1ff; /* Light blue */
+}
+
+/* Add File Block */
+.file.add {
   display: flex;
-  justify-content: center; /* Horizontal centering */
-  align-items: center; /* Vertical centering */
-  background-color: #aa9bfc;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  background-color: #f1f1f1;
+  cursor: pointer;
 }
-.fileupload-body {
-  height: 80%;
-  background-color: #aa9bfc;
-  overflow-x: auto;
+
+.file.add:hover {
+  background-color: #ddd;
 }
-/* Stack dots vertically */
-.buttoncon{
-    width:100%;
-    height:100%;
-    margin-left:30%;
+
+/* Hover Effect */
+.file:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
 }
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #190026;
+  color: #fff;
+  padding: 15px;
+  font-size: 1.2rem;
+}
+
+.chat-header h3 {
+  margin: 0;
+}
+
+.chat-header .h22 {
+  margin: 0;
+}
+
+.file_img {
+  width: 50px;
+  height: 50px;
+}
+.settings-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
 .dot-wrapper {
   display: flex;
-  flex-direction: column; /* Stacks items vertically */
-  justify-content: center;
-  align-items: center;
+  gap: 4px;
 }
-.chat-header {
-  background-color: #664cf2;
-  display: flex;
 
-  justify-content: space-between;
-  color: white;
-  padding: 24px; /* Increased padding */
-  text-align: center;
-  font-size: 28px; /* Increased font size */
+.dot {
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border-radius: 50%;
 }
-h1 {
-  margin-left: 35%;
-}
+
 .chat-box {
   flex: 1;
-  padding: 24px; /* Increased padding */
+  padding: 15px;
   overflow-y: auto;
-  background-color: #aa9bfc;
+  background-color: #190026;
 }
-.upload-button {
-  margin-bottom: 24px; /* Increased margin between messages */
-  max-width: 80%;
-  padding: 16px; /* Increased padding inside messages */
-  border-radius: 16px; /* Larger border radius */
-  color: white;
-  background-color: black;
-  width: 50%;
-  margin-top: 20px;
-}
+
 .message {
-  margin-bottom: 24px; /* Increased margin between messages */
-  max-width: 80%;
-  padding: 16px; /* Increased padding inside messages */
-  border-radius: 16px; /* Larger border radius */
+  margin-bottom: 15px;
+  padding: 10px 15px;
+  border-radius: 20px;
+  display: inline-block;
+  width: 100%;
 }
 
-hr {
-  border: none;
-  height: 1px;
-  background-color: #333; /* Color of the line */
-}
 .received {
-  background-color: black;
-  color: white;
-  width: 320px;
-  margin-left: 15%;
-  text-align: left;
-}
-
-.sent {
-  background-color: black;
-  color: white;
-  width: 320px;
-  margin-left: 60%;
-  text-align: right;
-}
-
-.chat-input {
   display: flex;
-  padding: 24px; /* Increased padding */
-  background-color: #AA9BF;
+  justify-content: flex-end;
+}
+.test {
+  background: #403848;
+  max-width: calc(100% - 30%);
+  word-wrap: break-word;
+  color: #ffffff;
+  margin-bottom: 15px;
+  padding: 10px 15px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.aiimg {
+  width: 40px;
+  height: 40px;
+}
+.sent {
+  background: #190026;
   color: white;
-  border-radius: 0 0 8px 8px;
-  width: 80%;
-  margin-left: 8%;
+  align-self: flex-end;
+  max-width: calc(100% - 30%);
+  word-wrap: break-word;
+  display: flex;
+}
+
+.sent p {
+  margin-left: 1%;
+}
+.chat-input {
+  padding: 15px;
+  background-color: #190026;
+  height: 15%;
 }
 
 .chat-input input {
-  flex: 1;
-  padding: 16px; /* Increased padding */
-  border: 1px solid #ddd;
-  border-radius: 50px; /* Increased border radius */
-  margin-right: 16px; /* Increased margin */
-  font-size: 20px; /* Increased font size */
+  background-color: #4b4b5a; /* Input background */
+  color: #e5e5e5; /* Text color */
+  border: none; /* No border */
+  border-radius: 20px; /* Rounded corners */
+  margin-top: 50px;
+  height: 50%; /* Set the height */
+  padding-left: 15px; /* Space for text on the left */
+  width: 70%; /* Set width */
+  margin-left: 15%;
+  font-size: 16px; /* Adjust text size */
+  outline: none; /* Remove default focus outline */
+  box-sizing: border-box; /* Ensures padding doesn't affect width/height */
 }
 
 .chat-input button {
-  padding: 16px 24px; /* Increased padding */
-  background-color: black;
-  border: none;
-  border-radius: 8px; /* Increased border radius */
+  background: #7b68ee;
   color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-left: 10px;
+  border-radius: 20px;
+  font-size: 1rem;
   cursor: pointer;
-  font-size: 18px; /* Increased font size */
 }
 
 .chat-input button:hover {
-  background-color: #9a88d8;
+  background: #3b41c5;
+}
+
+.vertical-line {
+  width: 1px;
+  background: #d1d5db;
+}
+
+.fileupload-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 15px;
+  background: #190026;
+  width: 10%;
+}
+
+.upload-button {
+  background: #7b68ee;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.upload-button:hover {
+  background: #3b41c5;
+}
+
+@media (max-width: 768px) {
+  .struc {
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .vertical-line {
+    display: none;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #6a5acd; /* Color of the scrollbar thumb */
+  border-radius: 5px; /* Rounded corners for the scrollbar thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #483d8b; /* Darker color when hovering */
+}
+
+::-webkit-scrollbar-track {
+  background: #e6e6fa; /* Background color of the scrollbar track */
+  border-radius: 5px; /* Rounded corners for the track */
+}
+
+/* Optional: Apply styles to specific containers only */
+.fileupload-body::-webkit-scrollbar,
+.chat-box::-webkit-scrollbar {
+  width: 8px; /* Adjust scrollbar width for specific containers */
+}
+
+.fileupload-body::-webkit-scrollbar-thumb,
+.chat-box::-webkit-scrollbar-thumb {
+  background-color: #6962ad; /* Thumb color for these containers */
+}
+.loading-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7); /* Black background with transparency */
+  color: white; /* White text */
+  padding: 15px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  text-align: center;
+  width: 200px; /* Set a fixed width for the loading indicator */
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #8479e1;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 10px; /* Space between the spinner and text */
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.hidden {
+  display: none;
 }

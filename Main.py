@@ -32,22 +32,24 @@ class Parsers():
     def __init__(self, apikey):
         self.apikey = apikey
         self.splitter = TokenTextSplitter(
-            chunk_size=200, chunk_overlap=50, length_function=len)
+            chunk_size=400, chunk_overlap=50, length_function=len)
+        # Note make so the user chose it  spliter
+        # and chunk size / overlap
         self.embedingAPI = OpenAIEmbeddings(
             openai_api_key=self.apikey, model="text-embedding-3-large")
 
     def SetSpliter(self, spliter, chuncksize, overlap):
         match spliter:
-            case "Character":
+            case "CharacterTextSplitter":
                 self.splitter = CharacterTextSplitter(
                     chunk_size=chuncksize, chunk_overlap=overlap)
-            case "RecursiveCharacter":
+            case "RecursiveCharacterTextSplitter":
                 self.splitter = RecursiveCharacterTextSplitter(
                     chunk_size=chuncksize, chunk_overlap=overlap)
-            case "Token":
+            case "TokenTextSplitter":
                 self.splitter = TokenTextSplitter(
                     chunk_size=chuncksize, chunk_overlap=overlap)
-            case "Markdown":
+            case "MarkdownHeaderTextSplitter":
                 self.splitter = MarkdownTextSplitter(
                     chunk_size=chuncksize, chunk_overlap=overlap)
             case _:
@@ -101,19 +103,41 @@ class Parsers():
         yn = max([x, y])
         return (1 - abs(xn - yn) / abs(yn)) * 100
 
-    def cosine_search_top3_t(self, vectors, query_vector, threshold=20):
+    def cosine_search_top3(self, vectors, query_vector, threshold=20):
+        top_3_indices = []
         vectors = np.array(vectors)
         query_vector = np.array(query_vector)
         query_vector = query_vector.reshape(1, -1)
-        similarities = [cosine_similarity(
-            query_vector.reshape(1, -1), vec.reshape(1, -1)) for vec in vectors]
 
-        matching_indices = [i for i, sim in enumerate(
-            similarities) if sim >= threshold][:3]
+        distances = cosine_similarity(vectors, query_vector)
 
-        return matching_indices
+        similarities = distances.flatten() * 100
 
-    def cosine_search_top3(self, vectors, query_vector, threshold=20):
+        closest_index = np.argmax(distances)
+        if (similarities[closest_index] < threshold):
+            return ([], 0)
+        print('*'*100)
+        print(similarities)
+        print('-'*100)
+        # Reverse for descending order
+        sorted_indices = np.argsort(similarities)[::-1]
+
+        for i in range(0, len(sorted_indices[:3])):
+            print(similarities[sorted_indices[i]])
+            if (similarities[sorted_indices[i]] >= threshold):
+                top_3_indices.append(sorted_indices[i])
+
+        print('*'*100)
+        # print(top_3_vectors, " top 3 vectors")
+        # print("-"*20)
+        # print(top_3_similarities, " top 3 similierts")
+        # print("-"*20)
+        similarities_score = 0
+        for i in top_3_indices:
+            similarities_score += distances[i]
+        return (top_3_indices, similarities_score)
+
+    def cosine_search_top3_t(self, vectors, query_vector, threshold=20):
         vectors = np.array(vectors)
         query_vector = np.array(query_vector)
         query_vector = query_vector.reshape(1, -1)
@@ -122,6 +146,7 @@ class Parsers():
         closest_index = np.argmax(distances)
 
         similarities = distances.flatten() * 100
+        print(similarities)
         # Reverse for descending order
         sorted_indices = np.argsort(similarities)[::-1]
         top_3_indices = [
@@ -146,6 +171,7 @@ class Parsers():
 
 
 # ------------------------------------------------------------------------------------------------
+
 
     def Vectoraiz(self, file_path):
         self.file_contet = PyPDFLoader(file_path).load()
@@ -174,7 +200,10 @@ if __name__ == "__main__":
     most_similar_index = np.argmax(similarities)
     most_similar_vector = data[most_similar_index]
 
-    print(similarities)
+    my_list = [42, 73]
+    last_10_items = my_list[-10:]
+    print(last_10_items)
+
 # Calculate Euclidean distances between the query vector and the dataset
 
 # Find the closest vector

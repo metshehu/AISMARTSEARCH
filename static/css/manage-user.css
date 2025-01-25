@@ -1,0 +1,61 @@
+body {
+    background-color: #190026;
+    color: white;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+select,
+input[type="range"],
+input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.submit-button {
+    padding: 10px 20px;
+    background-color: #6a0dad;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #5c0a99;
+}
+.delete-button {
+    text-decoration: none; /* Remove underline */
+    padding: 10px 20px; /* Add padding for button size */
+    background-color:red; 
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 4px; /* Rounded corners */
+    display: inline-block; /* Make it behave like an inline-block element */
+    text-align: center; /* Center text */
+    cursor: pointer; /* Pointer cursor for button behavior */
+}
+
+.delete-button:hover {
+    background-color: #ff7f7f;
+}
+
+
+.slider-label {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+/* Align buttons side by side */
+.button-container {
+    display: flex;
+    gap: 10px; /* Add spacing between buttons */
+}
+

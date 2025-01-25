@@ -1,103 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-
-        {% load static %}
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Chat Window</title>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+        {% load static %}
         <link rel="stylesheet" href="{% static 'css/chat.css' %}">
+        <title>Chat Window</title>
     </head>
     <body>
-
         <div class="struc">
             <div class="chat-container">
-                <div class="chat-header">
+                <div id="loading-indicator" class="loading-indicator hidden">
+                    <div class="spinner"></div>
+                    <span class="loading-text">Sending...</span>
+                </div>
 
-                    <h3> {{dir}}</h3> 
-                    <!-- going to be a img-->
-                    <h2 class='h22'>Chat</h2>
-                    <!-- going to be a img-->
-                    <!-- More messages can be added here -->
-                    <button class="settings-button">
+                <div class="chat-header">
+                    <h3>Met.AI</h3>
+                    <button class="settings-button" onclick="toggleFileUploadContainer()">
                         <div class="dot-wrapper">
                             <div class="dot"></div>
                             <div class="dot"></div>
                             <div class="dot"></div>
                         </div>
                     </button>
-
-
-                </div>
-
-                <div>
-
                 </div>
                 <div class="chat-box">
                     {% for question, answers in combined %}
-
                     <div class="message received">
-                        <p>{{question}}</p>
+                        <div class="test">
+                            <p >{{question}}</p>
+                        </div>
                     </div>
+
                     <div class="message sent">
+                        <img class="aiimg" src="{% static 'staticphotos/Asset 1@4x.png'%}" alt="{{ dir }}" class="user-photo">
                         <p>{{answers}}</p>
                     </div>
-                    {%endfor%}
+                    {% endfor %}
                 </div>
-
                 <form method="post" class="chat-input">
                     {% csrf_token %}
-
-                    <input type="text" name="question" placeholder="Type a message...">
-                    <button>Send</button>
-
+                    <input type="text" name="question" placeholder="Ask me anything...">
                 </form>
             </div>
-
             <div class="vertical-line"></div>
-
             <div class="fileupload-container">
-
-                <div class="fileupload-heder">
-
-                    <h3>File Upload</h3>
-                </div>
-
-                <div class="fileupload-body">
-                    {% for i in files%}
-                    <div class="filename_div">
-                        {{i}}
+                <h2 class="underline">Uploaded files ({{files|length}})</h2>
+                <div class="file-grid">
+                    {% for i in files %}
+                    <div class="file">
+                        {% if '.pdf' in i %}
+                        <img src="{% static 'staticphotos/PdfLogo.png' %}" alt="PDF">
+                        {% elif '.word' in i %}
+                        <img  src="{% static 'staticphotos/WordLogo.png' %}" alt="Word">
+                        {% endif %}
+                        <p>{{i}}</p>
                     </div>
-
                     {% endfor %}
+                   <div class="file add"  data-url="{% url 'save-files' mydir=dir %}">
 
-                </div>
-                <hr>
-                <div class='fileupload-footer'>
-
-                    <a class="buttoncon" href="{% url 'save-files' mydir=dir%}">
-                        <button class="upload-button">UPLOAD</button>
-                    </a>
+                        <p>+</p>
+                    </div>
                 </div>
 
             </div>
         </div>
-
         <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const chatBoxes = document.querySelectorAll('.chat-box');
-    chatBoxes.forEach(chatBox => {
-        chatBox.scrollTop = chatBox.scrollHeight;
+        document.addEventListener('DOMContentLoaded', function () {
+            const chatBoxes = document.querySelectorAll('.chat-box');
+            chatBoxes.forEach(chatBox => {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+
+            const form = document.querySelector('.chat-input');
+            const loadingIndicator = document.getElementById('loading-indicator');
+
+            form.addEventListener('submit', function () {
+                loadingIndicator.classList.remove('hidden');
+            });
+        });
+
+        function toggleFileUploadContainer() {
+            const fileUploadContainer = document.querySelector('.fileupload-container');
+            if (fileUploadContainer.style.display === 'none' || fileUploadContainer.classList.contains('hidden')) {
+                fileUploadContainer.style.display = 'flex';
+                fileUploadContainer.classList.remove('hidden');
+            } else {
+                fileUploadContainer.style.display = 'none';
+                fileUploadContainer.classList.add('hidden');
+            }
+        }
+document.querySelectorAll('.file.add').forEach(function(div) {
+        div.addEventListener('click', function() {
+            var url = div.getAttribute('data-url');  // Get the URL from the data attribute
+            window.location.href = url;  // Redirect to the URL
+        });
     });
-});
 
 
-
-</script>
-
+        </script>
 
     </body>
 </html>
-
-<!-- Button with vertical dots -->
 
