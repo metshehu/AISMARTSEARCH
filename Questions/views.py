@@ -179,16 +179,31 @@ def addContextother(data, messages):
 
 
 def addContext(data, message):
-    for i in data:
-        print(i+'-'*20)
-        text = ''
-        for j in data[i]['chunks']:
-            text += f"```text {j}```"
+    #    for i in data:
+    #        print(i+'-'*20)
+    #        text = ''
+    #        for j in data[i]['chunks']:
+    #            text += f"```text {j}```"
 
-        newdic = {"role": "system", "content": f"The following file: '{
-            i}'contains the following relevant information to support the answer:{text}"}
+    #        newdic = {"role": "system", "content": f"The following file: '{
+    #            i}'contains the following relevant information to support the answer:```text{text} ```"}
 
-        # {"role": "system", "content": "The following file": "Computer science and engineering sylabus” contains the following relevant information to support the answer:"}
+    # {"role": "system", "content": "The following file": "Computer science and engineering sylabus” contains the following relevant information to support the answer:"}
+    #        message.append(newdic)
+    for file_name, content in data.items():
+        print(file_name + '-' * 20)
+
+        chunks = '\n'.join(
+            [f"```text\n{chunk}\n```" for chunk in content['chunks']])
+
+        newdic = {
+            "role": "system",
+            "content": (
+                f"The following file: '{
+                    file_name}' contains relevant information to support the answer:\n"
+                f"{chunks}"
+            )
+        }
         message.append(newdic)
 
 
@@ -201,11 +216,11 @@ def addHistory(question_history, answer_history, message):
     for index, (q, a) in enumerate(zip(question_history, answer_history)):
         question_entry = {
             "role": "user",
-            "content": f"Past Question {index + 1}: {q}"
+            "content": f"Past Question : {q}"
         }
         answer_entry = {
             "role": "assistant",
-            "content": f"Past Answer {index + 1}: {a}"
+            "content": f"Past Answer : {a}"
         }
         message.append(question_entry)
         message.append(answer_entry)
@@ -230,7 +245,7 @@ def gettemp(user):
     return UserValues.objects.filter(user=user).first().temp
 
 
-def context_aware_responses(query, Question_history, Answer_history, data, user):
+def context_aware_responses_og(query, Question_history, Answer_history, data, user):
     # openai.api_key = settings.OPENAI_K
     temp = gettemp(user)
     client = OpenAI(api_key=settings.OPENAI_KEY)
@@ -241,10 +256,10 @@ def context_aware_responses(query, Question_history, Answer_history, data, user)
     messages = [
         {"role": "system", "content": (
             "You are a context-aware search engine. You must return responses **only** based on the provided context  and the user's past interactions. "
-            #            "You are not allowed to infer or assume answers if the context does not provide sufficient information. "
-            #            "If the context does not contain sufficient information to answer the question, respond only with: "
-            #            "'The context does not contain sufficient information to answer this question.' "
-            #            "Do not provide additional information, guesses, or speculative answers."
+            "You are not allowed to infer or assume answers if the context does not provide sufficient information. "
+            "If the context does not contain sufficient information to answer the question, respond only with: "
+            "'The context does not contain sufficient information to answer this question.' "
+            "Do not provide additional information, guesses, or speculative answers."
         )},
         {"role": "user", "content": f"current Question: {query}"},
     ]
@@ -274,6 +289,65 @@ def context_aware_responses(query, Question_history, Answer_history, data, user)
     response_message = response.choices[0].message.content
     return response_message
     # return response['choices'][0]['message']['content'].strip()
+
+
+def context_aware_responses(query, Question_history, Answer_history, data, user):
+    # openai.api_key = settings.OPENAI_K
+    temp = gettemp(user)
+    client = OpenAI(api_key=settings.OPENAI_KEY)
+    print(query, "this is querry", "-"*100)
+    # if (len(data) == 0):
+    #    return "The context does not contain sufficient information to answer this question.--2"
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                    "You are an AI Agent designed to assist with answering questions based on the provided context. "
+                    "Your behavior and responses are governed by the following rules:\n\n"
+                    "1. **Context-Driven Responses Only**:\n"
+                    "- You must answer questions **only** based on the given context, user-provided information, or historical interactions.\n"
+                    "2. **No External Knowledge or Assumptions**:\n"
+                    "- You are not allowed to use knowledge outside the context, assume details, or provide speculative answers.\n\n"
+                    "3. **Clear and Concise Answers**:\n"
+                    "- Provide clear, accurate, and concise answers based on the available context.\n"
+                    "- Avoid verbose explanations unless explicitly requested.\n\n"
+                    "4. **Polite and Professional Tone**:\n"
+                    "- Maintain a polite and professional tone in all responses.\n\n"
+                    "5. **Error Handling**:\n"
+                    "- If you encounter ambiguous, contradictory, or invalid input, clarify the issue or state the limitations explicitly.\n\n"
+                    "You will now enter a question/answer session. Begin by addressing the user's query based on the context."
+            )
+        },
+        {
+            "role": "user",
+            "content": f"Current Question: {query}"
+        }
+    ]
+
+    # {"role": "user", "content": f"Context: {chunks}\n\nQuestion: {  # remove the cuhnks cus it allred add
+    #    query}\n\n Past Questino:{Question_history}\n\n past Answer:{Answer_history}"},
+    # past quest/ answer make it add context insted of dumping data
+    addHistory(Question_history, Answer_history, messages)
+
+    print('-'*100)
+
+    print(len(data))
+    print('<>'*50)
+    for i in data:
+        print(data[i]['chunks'])
+        print(len(data[i]['chunks']))
+        print(data[i]['score'])
+    print('-'*100)
+    addContext(data, messages)
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=messages,
+        max_tokens=300,  # test on the higer end to the lowest 50-600
+        temperature=temp,  # Strict and deterministic responses
+
+    )
+    response_message = response.choices[0].message.content
+    return response_message
 
 
 def asking(request, mydir, text):

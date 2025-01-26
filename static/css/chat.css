@@ -215,6 +215,8 @@ body {
 
 .dot-wrapper {
   display: flex;
+  flex-direction: column;
+
   gap: 4px;
 }
 

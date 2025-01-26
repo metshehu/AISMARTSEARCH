@@ -8,8 +8,13 @@
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body>
+        <div class="chat-header">
+            <h3>Met.AI</h3>
+        </div>
+ 
    <div class="container">
-        <div class="select-list">
+
+       <div class="select-list">
             {% for user, photo in combined %}
                 <a href="/chat/{{ user }}" class="user-card">
                     <img src="{% static 'userphotos/'|add:photo %}" alt="{{ user }}" class="user-photo">
