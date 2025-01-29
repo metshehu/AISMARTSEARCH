@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Netflix User Selection</title>
+    <link rel="stylesheet" href="{% static 'css/questionchunks.css' %}" />
+  </head>
+
+  <body>
+    {% for item in data %}
+        <h2>File: {{ item.file }}</h2>
+        <h3>Chunks:</h3>
+        {% for chunk in item.chunks %}
+            <div class="chunk">
+                <pre>{{ chunk }}</pre>
+            </div>
+        {% endfor %}
+    {% endfor %}
+  </body>
+</html>

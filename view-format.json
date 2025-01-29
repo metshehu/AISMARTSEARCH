@@ -1,0 +1,326 @@
+[
+  {
+    "role": "system",
+    "content": "You are an AI Agent designed to assist with answering questions based on the provided context. Your behavior and responses are governed by the following rules:
+        \n
+        
+        \n1. **Context-Driven Responses Only**:
+        
+        \n- You must answer questions **only** based on the given context, user-provided information, or historical interactions.
+        
+        \n2. **No External Knowledge or Assumptions**:
+        
+        \n- You are not allowed to use knowledge outside the context, assume details, or provide speculative answers.
+        
+        \n
+        
+        \n3. **Clear and Concise Answers**:
+        
+        \n- Provide clear, accurate, and concise answers based on the available context.
+        
+        \n- Avoid verbose explanations unless explicitly requested.
+        
+        \n
+        
+        \n4. **Polite and Professional Tone**:
+        
+        \n- Maintain a polite and professional tone in all responses.
+        
+        \n
+        
+        \n5. **Error Handling**:
+        
+        \n- If you encounter ambiguous, contradictory, or invalid input, clarify the issue or state the limitations explicitly.
+        
+        \n
+        \nYou will now enter a question/answer session. Begin by addressing the user's query based on the context."
+  },
+  {
+    "role": "user",
+    "content": "Current Question: what are the assessment methods that lavdim usises"
+  },
+  {
+    "role": "user",
+    "content": "Past Question : tell me about iot"
+  },
+  {
+    "role": "assistant",
+    "content": "Past Answer : The context does not contain sufficient information to answer this question."
+  },
+  {
+    "role": "user",
+    "content": "Past Question : what is a Aktuatorët ?"
+  },
+  {
+    "role": "assistant",
+    "content": "Past Answer : Aktuatorët janë elemente që veprojnë në drejtim të kundërt nga senzorët. Ndërsa senzorët shndërrojnë një dukuri fizike në sinjal elektrik, aktuatorët shndërrojnë hyrjet elektrike në efekt fizik, si p.sh. lëvizje ose forcë. Shpesh herë, sistemet integrojnë senzorë dhe aktuatorë, të njohura si MEMS (Micro-Electro-Mechanical Systems), si p.sh. airbag në automjet. Aktuatorët klasifikohen sipas llojit të lëvizjeve (lineare, rrotulluese, etj.), fuqisë dalëse (fuqi të lartë, të vogël, mikrofuqi) dhe varësisht nga numri i gjendjeve stabile në dalje (binare apo kontinuale)."
+  },
+  {
+    "role": "user",
+    "content": "Past Question : explain to me what are RISC dhe CISC miktocontrollers"
+  },
+  {
+    "role": "assistant",
+    "content": "Past Answer : RISC (Reduced Instruction Set Computer) dhe CISC (Complex Instruction Set Computer) janë dy arkitektura të ndryshme të mikrokontrollerave që përdoren për të kryer operacione të ndryshme në sistemet kompjuterike.
+        \n
+        
+        \n**RISC mikrokontrollerat:**
+        
+        \n- Fokusohen në operacione të thjeshta me qëllim që instrukcionet e thjeshta të kryhen sa më shpejt, mundësisht brenda një cikli të kllokut.
+        
+        \n- Përdorin pipelining për të përshpejtuar ekzekutimin e instrukcioneve.
+        
+        \n- Përparësitë përfshijnë instrukcione të thjeshta që dekodohen dhe ekzekutohen më shpejt, shpenzim më të ulët të energjisë, dhe madhësi më të vogël të çipit.
+        
+        \n- Mangësitë përfshijnë nevojën për shumë instrukcione për detyra komplekse dhe përdorim intensiv të memories në këto raste.
+        
+        \n
+        
+        \n**CISC mikrokontrollerat:**
+        
+        \n- Përdorin një instrukcion për të realizuar operacione komplekse, që zakonisht kërkojnë disa cikle të kllokut për t'u ekzekutuar.
+        
+        \n- Përparësitë përfshijnë më pak kod dhe më pak punë me memorien, si dhe një"
+  },
+  {
+    "role": "user",
+    "content": "Past Question : What are the Learning Outcomes That Lavdim requires"
+  },
+  {
+    "role": "assistant",
+    "content": "Past Answer : The context does not contain sufficient information to answer this question."
+  },
+  {
+    "role": "user",
+    "content": "Past Question : What are the Learning Outcomes That Lavdim requires"
+  },
+  {
+    "role": "assistant",
+    "content": "Past Answer : Upon completion of the semester, the student is expected to achieve the following learning outcomes in the course taught by Dr. Sc. Lavdim Beqiri:
+        \n
+        
+        \n- Have an understanding of space search and search algorithms, logic-based knowledge representation, and issues in reasoning methods.
+        
+        \n- Explain concisely the scope of AI, its potential for society, as well as its limitations.
+        
+        \n- Have an understanding of the limitations of the current symbolic AI paradigm.
+        
+        \n- Be able to select appropriate search paradigms for appropriate problems.
+        
+        \n- Design formal problems in AI and identify important features and properties.
+        
+        \n- Be able to design a simple agent system and associated ontology and justify the design.
+        
+        \n- Correctly determine which AI technique(s) should be used to solve a particular problem, if any.
+        
+        \n- Design software agents that act rationally in complex domains.
+        
+        
+        \n- Discuss contemporary applications of AI from both a technical and an ethical perspective."
+  },
+  {
+    "role": "user",
+    "content": "Past Question : what are the Models and Artichtecure in web servies"
+  },
+  {
+    "role": "assistant",
+    "content": "Past Answer : The context does not contain sufficient information to answer this question."
+  },
+  {
+    "role": "user",
+    "content": "Past Question : what are the Models and Artichtecure in web servies"
+  },
+  {
+    "role": "assistant",
+    "content": "Past Answer : Web services architecture includes four main models:
+        \n
+        
+        \n1. **Message-Oriented Model**: Focuses on the exchange of messages between services.
+        
+        \n2. **Service-Oriented Model**: Centers around the provision and consumption of services.
+        
+        \n3. **Resource-Oriented Model**: Emphasizes resources and their manipulation.
+        
+        \n4. **Development Policies Model**: Involves guidelines and policies for developing web services.
+        
+        \n
+        
+        \nEach model is named to highlight a key concept of the overall web services architecture. 
+        
+        \n
+        
+        \nIn terms of implementation, a typical web service architecture involves:
+        
+        \n
+        
+        \n- **Application Server**: Provides the implementation of services and exposes them through WSDL/SOAP. It can be implemented in Java, EJB, .NET (C#), etc.
+        
+        \n- **SOAP Server**: Implements the SOAP protocol.
+        
+        \n- **HTTP Server**: A standard web server that facilitates communication.
+        
+        \n- **SOAP Client**: Implements the SOAP protocol on the client side.
+        
+        \n
+        
+        
+        \nThis architecture allows web services to be network-accessible interfaces to application programs, 
+        built using standard Internet technologies, without clients needing to know the implementation details."
+  },
+  {
+    "role": "user",
+    "content": "Past Question : tell me about William Shakespeare"
+  },
+  {
+    "role": "assistant",
+    "content": "Past Answer : The context does not contain sufficient information to answer this question.--2"
+  },
+  {
+    "role": "user",
+    "content": "Past Question : what are the Models and Artichtecure in Ueb sherbimet"
+  },
+  {
+    "role": "assistant",
+    "content": "Past Answer : The context does not contain sufficient information to answer this question."
+  },
+  {
+    "role": "user",
+    "content": "Past Question : What are the Learning Outcomes That Lavdim requires"
+  },
+  {
+    "role": "assistant",
+    "content": "Past Answer : The context does not contain sufficient information to answer this question."
+  },
+  {
+    "role": "system",
+    "content": "The following file: 'Ueb Shërbimet  Ueb APIS -L6.csv' contains relevant information to support the answer:
+        \n```text
+        
+        \nprof.ass.Dr.sc.Liridon Hoti
+        
+        \nUEB SHËRBIMET & UEB API’S
+        
+        \n```
+        
+        \n```text
+        
+        \nModelet arkitekturale të Ueb Shërbimeve
+        
+        \nProf. Ass. Dr .sc. Liridon Hoti
+        
+        \n• Arkitekturae Shërbimeve Ueb ka katër modele.
+        
+        \n– Modeli i orientuar në mesazhe (message-oriented)
+        
+        \n– Modeli i orientuar në shërbime (service-oriented)
+        
+        \n– Modeli i orientuar në burime (resource-oriented) dhe
+        
+        \n– Modeli i politikave zhvilluese (development policies)
+        
+        \n• Secili model është emërtuar në atë mënyrë, që të shikohet si 
+        
+        \nkoncept kyç i kompletarkitekturës së Ueb shërbimeve .
+        
+        \n2
+        
+        \n```
+        
+        \n```text
+        
+        \nUEB SHËRBIMET & UEB API’S
+        
+        \nprof.ass.Dr .sc. LiridonHoti
+        
+        \nModelet arkitekturale të Ueb Shërbimeve
+        
+        \n```"
+  },
+  {
+    "role": "system",
+    "content": "The following file: '000 Sillabus (eng) - Fundamentals of Artificial Intelligence - Lavdim Beqiri (1).csv' contains relevant information to support the answer:
+        \n```text
+        
+        \nMethods 1. Lectures 20% 
+        
+        \n2. Group Project 20% 
+        
+        \n3. The firs test 20% 
+        
+        \n4. Exam 40% 
+        
+        \nAssessment Methods 
+        
+        \nAssessment Activity Number Week Weight (%) 
+        
+        \n1. Participation in lectures 5 1-12 20% 
+        
+        \n2. Participation in exercises  2-12 20% 
+        
+        \n3. Group Project (2 students)  7 20% 
+        
+        \n4. Final exam  14 40% 
+        
+        \nCourse resources 
+        
+        \nResources Number 
+        
+        \n1. Classes 1 
+        
+        \n2. Moodle 1 
+        
+        \n3. Laboratory 1 
+        
+        \n4. Software: Anaconda Navigator   1 
+        
+        \n5. Projector 1 
+        
+        \n  
+        
+        \nECTS Workload 
+        
+        \nActivity Weekly hrs Total workload 
+        
+        \n1. Lectures 2 30 
+        
+        \n2. Seminars   
+        
+        \n3. Laboratory 2 30 
+        
+        \n4. Practice in industry   
+        
+        \n5. Independent learning 5 88 
+        
+        \n6. Final Exam 1 2 
+        
+        \nLiterature/References 
+        
+        \n- Stuart J. Russell and Peter Norvig – “Artificial Intelligence: A Modern Approach” 
+        
+        \n- Aarup, M., Arentoft, M. M., Parrod, Y., Stader, J., and Stokes, I. (1994). OPTIMUM-AIV: A 
+        
+        \nknowledge-based planning and scheduling system for spacecraft AIV. In Fox, M. and 
+        
+        \nZweben, M. (Eds.), Knowledge Based Scheduling. Morgan Kaufmann. 
+        
+        \n- Blei, D. M., Ng, A. Y., and Jordan, M. I. (2001). Latent Dirichlet Allocation. In Neural 
+        
+        \nInformation Processing Systems, Vol. 14. 
+        
+        \n- Boyan, J. A. and Moore, A. W. (1998). Learning evaluation functions for global optimization 
+        
+        \nand Boolean satisfiability. In AAAI-98. 
+        
+        \n- Dreyfus, H. L. (1972). What Computers Can’t Do: A Critique of Artificial Reason. Harper and 
+        
+        \nRow. 
+        
+        \nContact 
+        
+        \n 
+        
+        \nlavdim.beqiri@ubt-uni.net
+        
+        \n```"
+  }
+]

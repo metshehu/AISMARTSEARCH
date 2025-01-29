@@ -30,13 +30,13 @@
                 <div class="chat-box">
                     {% for question, answers in combined %}
                     <div class="message received">
-                        <div class="test">
+                        <div class="exLayer">
                             <p >{{question}}</p>
                         </div>
                     </div>
 
-                    <div class="message sent">
-                        <img class="aiimg" src="{% static 'staticphotos/Asset 1@4x.png'%}" alt="{{ dir }}" class="user-photo">
+                    <div class="message sent" data-url="{% url 'chunks' user=user question=question%}">
+                        <img class="aiimg" src="{% static 'staticphotos/Asset 1@4x.png'%}" alt="{{ user }}" class="user-photo">
                         <p>{{answers}}</p>
                     </div>
                     {% endfor %}
@@ -60,7 +60,7 @@
                         <p>{{i}}</p>
                     </div>
                     {% endfor %}
-                   <div class="file add"  data-url="{% url 'save-files' mydir=dir %}">
+                   <div class="file add"  data-url="{% url 'save-files' user=user %}">
 
                         <p>+</p>
                     </div>
@@ -93,12 +93,22 @@
                 fileUploadContainer.classList.add('hidden');
             }
         }
-document.querySelectorAll('.file.add').forEach(function(div) {
-        div.addEventListener('click', function() {
-            var url = div.getAttribute('data-url');  // Get the URL from the data attribute
-            window.location.href = url;  // Redirect to the URL
+        document.querySelectorAll('.file.add').forEach(function(div) {
+            div.addEventListener('click', function() {
+                var url = div.getAttribute('data-url');  // Get the URL from the data attribute
+                window.location.href = url;  // Redirect to the URL
+            });
         });
+document.querySelectorAll('.message.sent').forEach(function(div) {
+    div.addEventListener('click', function() {
+        var url = div.getAttribute('data-url');  // Get the URL from the data-url attribute
+        if (url) {
+            window.location.href = url;  // Redirect to the URL if it exists
+        } else {
+            console.log('No data-url attribute found for this element.');
+        }
     });
+});
 
 
         </script>

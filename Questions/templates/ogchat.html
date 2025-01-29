@@ -17,7 +17,7 @@
 </div>
 
                <div class="chat-header">
-                <h3>{{dir}}</h3>
+                <h3>{{user}}</h3>
                 <h2 class="h22">Chat</h2>
                 <button class="settings-button" onclick="toggleFileUploadContainer()">
                     <div class="dot-wrapper">
@@ -57,7 +57,7 @@
             </div>
             <hr>
             <div class="fileupload-footer">
-                <a class="buttoncon" href="{% url 'save-files' mydir=dir %}">
+                <a class="buttoncon" href="{% url 'save-files' mydir=user %}">
                     <button class="upload-button">UPLOAD</button>
                 </a>
             </div>

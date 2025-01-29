@@ -1,4 +1,6 @@
+import ast
 import collections
+import json
 import os
 import shutil
 from itertools import chain
@@ -17,37 +19,13 @@ from Main import Parsers
 from .forms import FileUploadForm, MakeDirForm, UserValueForm
 from .models import History, UserValues
 
-"""
-Need to refactor the code and remvoe fileEmbedings lot of shit just rember to do this this week sundaytusday
-
-"""
-""""
-endpoint = os.getenv("OPENAI_API_KEY")
-print(endpoint)
-llm = ChatOpenAI(
-    api_key=endpoint
-)
-prompt = ChatPromptTemplate.from_messages([
-    ("system", "your answers Amarican RedNeck"),
-    ("user", "{input}")
-])
-
-output_parser = StrOutputParser()
-
-chain = prompt | llm | output_parser
-
-respones = chain.invoke(
-    {"input": "Can you roast me based on everything you know about me"})
-somthing to think about later
-"""
-
 
 def getalldirs(mypath):
-    dir = []
+    user = []
     for (dirpath, dirnames, filenames) in walk(mypath):
-        dir = dirnames
+        user = dirnames
         break
-    return dir
+    return user
 
 
 def allFileformat(mypath, format):
@@ -73,8 +51,16 @@ def remove_csv(user):
             print(f"File '{newpath}' does not exist.")
 
 
-def reembedfiles(user):
+def recrate_csvs(user_path, user, parser):
+    files = allFileformat(user_path, '.pdf')
+    for file_name in files:
+        file_url = f"{settings.STATIC_UPLOAD_DIR}/{user}/{file_name}"
+        fileChunks, fileEmbedings = parser.embedd(file_url)
+        parser.SaveCsv(settings.STATIC_UPLOAD_DIR+'/'+user,
+                       file_name[:-4], fileEmbedings, fileChunks)
 
+
+def reembedfiles(user):
     user_path = settings.STATIC_UPLOAD_DIR+f'/{user}'
     user_value = UserValues.objects.filter(user=user).first()
     parser = Parsers(settings.OPENAI_KEY)
@@ -84,28 +70,7 @@ def reembedfiles(user):
     parser.SetSpliter(spliter=spliter, chuncksize=chunksize, overlap=overlap)
 
     remove_csv(user)
-
-    files = allFileformat(user_path, '.pdf')
-    for file_name in files:
-        file_url = f"{settings.STATIC_UPLOAD_DIR}/{user}/{file_name}"
-        fileChunks, fileEmbedings = parser.embedd(file_url)
-        parser.SaveCsv(settings.STATIC_UPLOAD_DIR+'/'+user,
-                       file_name[:-4], fileEmbedings, fileChunks)
-
-
-def ogsystem_file_parser(querry_vector, mydir):
-    mypath = settings.STATIC_UPLOAD_DIR+'/'+mydir+'/'
-    parser = Parsers(settings.OPENAI_KEY)
-
-    vectorlist = []
-    chunkslist = []
-    files = allFileformat(mypath, '.csv')
-    for i in files:
-        chunks, vectors = parser.ReadFromFile(mypath + i)
-        closest_index = parser.cosine_search(vectors, querry_vector)
-        vectorlist.append(vectors[closest_index])
-        chunkslist.append(chunks[closest_index])
-    return (chunkslist, vectorlist)
+    recrate_csvs(user_path, user, parser)
 
 
 def addfiledata(dic, file_name, chunks, vectors, sim_score):
@@ -116,8 +81,23 @@ def addfiledata(dic, file_name, chunks, vectors, sim_score):
     }
 
 
-def system_file_parser(querry_vector, mydir):
-    mypath = settings.STATIC_UPLOAD_DIR+'/'+mydir+'/'
+def sort_data(files_data):
+    sorted_files = sorted(files_data.items(),
+                          key=lambda item: item[1]['score'], reverse=True)
+    top_10_files = sorted_files[:10]
+    top_10_chunks = list(chain.from_iterable(
+        item[1]['chunks'] for item in top_10_files))
+
+    top_10_vectors = list(chain.from_iterable(
+        item[1]['vectors'] for item in top_10_files))
+
+    sorted_files_dict = collections.OrderedDict(top_10_files)
+
+    return (top_10_chunks, top_10_vectors, sorted_files_dict)
+
+
+def system_file_parser(querry_vector, user):
+    mypath = settings.STATIC_UPLOAD_DIR+'/'+user+'/'
     parser = Parsers(settings.OPENAI_KEY)  # ✅
 
     vectorlist = []
@@ -141,57 +121,24 @@ def system_file_parser(querry_vector, mydir):
         chunkslist = []
         vectorlist = []
 
-    sorted_files = sorted(files_data.items(),
-                          key=lambda item: item[1]['score'], reverse=True)
-    top_10_files = sorted_files[:10]
-    top_10_chunks = list(chain.from_iterable(
-        item[1]['chunks'] for item in top_10_files))
+    top_10_chunks, top_10_vectors, sorted_files_dict = sort_data(files_data)
+    # sorted_files = sorted(files_data.items(),
+    # key=lambda item: item[1]['score'], reverse=True)
+    # top_10_files = sorted_files[:10]
+    # top_10_chunks = list(chain.from_iterable(
+    # item[1]['chunks'] for item in top_10_files))
 
-    top_10_vectors = list(chain.from_iterable(
-        item[1]['vectors'] for item in top_10_files))
+    # top_10_vectors = list(chain.from_iterable(
+    # item[1]['vectors'] for item in top_10_files))
 
-    sorted_files_dict = collections.OrderedDict(top_10_files)
+    # sorted_files_dict = collections.OrderedDict(top_10_files)
 
     return (top_10_chunks, top_10_vectors, sorted_files_dict)
 
 
-def addContextother(data, messages):
-    """
-    Adds context to the messages by iterating through the given data.
-    """
-    for filename, file_data in data.items():
-        # Concatenate chunks from the file
-        text = "\n".join(file_data.get('chunks', []))
-
-        # Add a strict instruction regarding the use of this context
-        new_entry = {
-            "role": "system",
-            "content": (
-                f"The following file: '{
-                    filename}' contains the relevant information: \n"
-                f"```text\n{text}\n```\n"
-                "You must strictly rely on this information to answer questions. "
-                "If this context is insufficient to answer the question, respond with: "
-                "'The context does not contain sufficient information to answer this question.'"
-            )
-        }
-        messages.append(new_entry)
-
-
 def addContext(data, message):
-    #    for i in data:
-    #        print(i+'-'*20)
-    #        text = ''
-    #        for j in data[i]['chunks']:
-    #            text += f"```text {j}```"
-
-    #        newdic = {"role": "system", "content": f"The following file: '{
-    #            i}'contains the following relevant information to support the answer:```text{text} ```"}
-
-    # {"role": "system", "content": "The following file": "Computer science and engineering sylabus” contains the following relevant information to support the answer:"}
-    #        message.append(newdic)
     for file_name, content in data.items():
-        print(file_name + '-' * 20)
+        # print(file_name + '-' * 20)
 
         chunks = '\n'.join(
             [f"```text\n{chunk}\n```" for chunk in content['chunks']])
@@ -208,7 +155,6 @@ def addContext(data, message):
 
 
 def addHistory(question_history, answer_history, message):
-    # Limit to the last 10 interactions for brevity
     question_history = question_history[-10:]
     answer_history = answer_history[-10:]
 
@@ -226,76 +172,15 @@ def addHistory(question_history, answer_history, message):
         message.append(answer_entry)
 
 
-# def addHistroy(question_history, answer_histry, message):
-#    index = 0
-#    question_history = question_history[-10:]
-#    answer_histry = answer_histry[-10:]
-
-# for q, a in zip(question_history, answer_histry):
-#        question_dic = {
-#            "role": "user", "content": f" this is a past question number {index} {q}"}
-#        answer_dic = {"role": "assistant",
-#                      "content": f" this is a past answer for question number {index} {a}"}
-
-#        message.append(question_dic)
-#        message.append(answer_dic)
-#        index += 1
-
 def gettemp(user):
     return UserValues.objects.filter(user=user).first().temp
-
-
-def context_aware_responses_og(query, Question_history, Answer_history, data, user):
-    # openai.api_key = settings.OPENAI_K
-    temp = gettemp(user)
-    client = OpenAI(api_key=settings.OPENAI_KEY)
-    print(query, "this is querry", "-"*100)
-    if (len(data) == 0):
-        return "The context does not contain sufficient information to answer this question.--2"
-
-    messages = [
-        {"role": "system", "content": (
-            "You are a context-aware search engine. You must return responses **only** based on the provided context  and the user's past interactions. "
-            "You are not allowed to infer or assume answers if the context does not provide sufficient information. "
-            "If the context does not contain sufficient information to answer the question, respond only with: "
-            "'The context does not contain sufficient information to answer this question.' "
-            "Do not provide additional information, guesses, or speculative answers."
-        )},
-        {"role": "user", "content": f"current Question: {query}"},
-    ]
-
-    # {"role": "user", "content": f"Context: {chunks}\n\nQuestion: {  # remove the cuhnks cus it allred add
-    #    query}\n\n Past Questino:{Question_history}\n\n past Answer:{Answer_history}"},
-    # past quest/ answer make it add context insted of dumping data
-    addHistory(Question_history, Answer_history, messages)
-
-    print('-'*100)
-
-    print(len(data))
-    print('<>'*50)
-    for i in data:
-        print(data[i]['chunks'])
-        print(len(data[i]['chunks']))
-        print(data[i]['score'])
-    print('-'*100)
-    addContext(data, messages)
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=messages,
-        max_tokens=300,  # test on the higer end to the lowest 50-600
-        temperature=temp,  # Strict and deterministic responses
-
-    )
-    response_message = response.choices[0].message.content
-    return response_message
-    # return response['choices'][0]['message']['content'].strip()
 
 
 def context_aware_responses(query, Question_history, Answer_history, data, user):
     # openai.api_key = settings.OPENAI_K
     temp = gettemp(user)
     client = OpenAI(api_key=settings.OPENAI_KEY)
-    print(query, "this is querry", "-"*100)
+   # print(query, "this is querry", "-"*100)
     # if (len(data) == 0):
     #    return "The context does not contain sufficient information to answer this question.--2"
     messages = [
@@ -329,15 +214,14 @@ def context_aware_responses(query, Question_history, Answer_history, data, user)
     # past quest/ answer make it add context insted of dumping data
     addHistory(Question_history, Answer_history, messages)
 
-    print('-'*100)
-
-    print(len(data))
-    print('<>'*50)
-    for i in data:
-        print(data[i]['chunks'])
-        print(len(data[i]['chunks']))
-        print(data[i]['score'])
-    print('-'*100)
+    # print('-'*100)
+    # print(len(data))
+    # print('<>'*50)
+    # for i in data:
+    # print(data[i]['chunks'])
+    # print(len(data[i]['chunks']))
+    # print(data[i]['score'])
+    # print('-'*100)
     addContext(data, messages)
     response = client.chat.completions.create(
         model="gpt-4o",
@@ -346,17 +230,9 @@ def context_aware_responses(query, Question_history, Answer_history, data, user)
         temperature=temp,  # Strict and deterministic responses
 
     )
+    print(messages)
     response_message = response.choices[0].message.content
     return response_message
-
-
-def asking(request, mydir, text):
-    fileEmbedings = Parsers(settings.OPENAI_KEY)
-    query_vector = fileEmbedings.embedquerry(text)
-    chunks, vectors = system_file_parser(query_vector, mydir)
-    history = user_history(mydir)
-    res = context_aware_responses(chunks, text)
-    return HttpResponse(f"{res}")
 
 
 def unpack_history(history):
@@ -444,15 +320,15 @@ def manage_users(request):
     return render(request, 'manage-users.html', context)
 
 
-def asking_normal(mydir, query):
+def asking_normal(user, query):
     fileEmbedings = Parsers(settings.OPENAI_KEY)
     query_vector = fileEmbedings.embedquerry(query)
-    chunks, vectors, all_data = system_file_parser(query_vector, mydir)
-    history = user_history(mydir)
+    chunks, vectors, all_data = system_file_parser(query_vector, user)
+    history = user_history(user)
     pastQuestion, pastAnswe = unpack_history(history)
     res = context_aware_responses(
-        query, pastQuestion, pastAnswe, all_data, mydir)
-    return res
+        query, pastQuestion, pastAnswe, all_data, user)
+    return (res, all_data)
 
 
 def user_history(user):
@@ -466,24 +342,64 @@ def user_history(user):
     return zip(question, answers)
 
 
-def chat(request, dir):
+def getchunksforQuestin(request, user, question):
+
+    chunk = History.objects.filter(
+        sender=user, question=question).first()
+    # chunk = []
+    # for i in History.objects.filter(sender=user):
+    #    chunk.append(i.question)
+    #    chunk.append(i.chunks)
+    # chunk_list = ast.literal_eval(chunk.chunks)
+
+    raw_response = chunk.chunks.replace("'", '"')
+
+# Load the JSON string into Python
+    data = json.loads(raw_response)
+
+    context = {
+        #   'chunks': chunk_list,
+        'data': data
+    }
+
+# Print the parsed data
+    #    for item in data:
+    #    print(f"File: {item['file']}")
+    #    print("Chunks:")
+    #    for chunk in item['chunks']:
+    #        print(chunk)
+    # return JsonResponse({'this is data --->': f"{data}"})
+    return render(request, 'questionchunks.html', context)
+
+
+def chat(request, user):
     responds = ""
-    mypath = settings.STATIC_UPLOAD_DIR+'/'+dir
+    mypath = settings.STATIC_UPLOAD_DIR+'/'+user
     if (request.method == "POST"):
         text = request.POST.get("question")
-        responds = asking_normal(dir, text)
+        responds, all_data = asking_normal(user, text)
         chat_message = History(
-            sender=dir, question=text, respons=responds)
+            sender=user, question=text, respons=responds, chunks=unpackdick(all_data))
         chat_message.save()
     files = allFileformat(mypath, '.pdf')
-    combined = user_history(dir)
+    combined = user_history(user)
     context = {
-        'dir': dir,
+        'user': user,
         'answer': responds,
         'files': files,
         'combined': combined
     }
     return render(request, 'chat.html', context)
+
+
+def unpackdick(data):
+
+    formatted_data = [
+        {"file": filename, "chunks": info["chunks"]}
+        for filename, info in data.items()
+    ]
+
+    return (formatted_data)
 
 
 def home(request):
@@ -501,20 +417,21 @@ def home(request):
     return render(request, 'home.html', context)
 
 
-def makedir(dir_name):
-    print(dir_name)
-    target_dir = os.path.join(settings.BASE_DIR, 'static', 'uploads', dir_name)
+def makedir(user_name):
+    # print(user_name)
+    target_dir = os.path.join(
+        settings.BASE_DIR, 'static', 'uploads', user_name)
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
-        print(f"Directory {dir_name} created at {target_dir}")
+        print(f"Directory {user_name} created at {target_dir}")
     else:
-        print(f"Directory {dir_name} already exists at {target_dir}")
+        print(f"Directory {user_name} already exists at {target_dir}")
         os.makedirs(target_dir, exist_ok=True)
 
 
 def uploadphoto(photoname, photo):
-    # Define the full file path
     upload_dir = os.path.join(settings.BASE_DIR, 'static/userphotos')
+
     # Save the file to the desired path
     fs = FileSystemStorage(location=upload_dir)
     fs.save(photoname, photo)
@@ -539,40 +456,37 @@ def makedirForm(request):
             return redirect(f"/Manage-User/{dirname}")
     form = MakeDirForm()
     return render(request, 'upload_file.html', {'form': form})
-    # return render(request,'home.html')
 
 
-def save_file(uploaded_file, dir):
-    # target_dir = os.path.join(settings.BASE_DIR, 'static', 'uploads')
-    # os.makedirs(target_dir, exist_ok=True)
-    fs = FileSystemStorage(location=settings.STATIC_UPLOAD_DIR+f'/{dir}')
+def save_file(uploaded_file, user):
+    fs = FileSystemStorage(location=settings.STATIC_UPLOAD_DIR+f'/{user}')
     fs.save(uploaded_file.name, uploaded_file)
 
-    file_url = f"{settings.STATIC_UPLOAD_DIR}/{dir}/{uploaded_file.name}"
+    file_url = f"{settings.STATIC_UPLOAD_DIR}/{user}/{uploaded_file.name}"
     parser = Parsers(settings.OPENAI_KEY)
-    user_value = UserValues.objects.filter(user=dir).first()
+    user_value = UserValues.objects.filter(user=user).first()
     spliter = user_value.splitter
     chunksize = user_value.chunksize
     overlap = user_value.overlap
-    print(f'info about user {dir} chunksize {
-          chunksize} overlap {overlap} spliter {spliter}')
+    # print(f'info about user {user} chunksize {
+    #      chunksize} overlap {overlap} spliter {spliter}')
     parser.SetSpliter(spliter=spliter, chuncksize=chunksize, overlap=overlap)
 
     fileChunks, fileEmbedings = parser.embedd(file_url)
-    parser.SaveCsv(settings.STATIC_UPLOAD_DIR+'/'+dir,
+    parser.SaveCsv(settings.STATIC_UPLOAD_DIR+'/'+user,
                    uploaded_file.name[:-4], fileEmbedings, fileChunks)
     return fileEmbedings
 
 
 @ csrf_exempt
-def fileupload(request, mydir):
+def fileupload(request, user):
     if request.method == 'POST' and request.FILES['file']:
         uploaded_file = request.FILES['file']
         my_file = Path(
-            f"{settings.STATIC_UPLOAD_DIR}/{mydir}/{uploaded_file.name}")
+            f"{settings.STATIC_UPLOAD_DIR}/{user}/{uploaded_file.name}")
         if not my_file.is_file():
-            save_file(uploaded_file, mydir)
-            return redirect(f"/chat/{mydir}/")
+            save_file(uploaded_file, user)
+            return redirect(f"/chat/{user}/")
         else:
             return JsonResponse({'success': False, 'data': "The File Existers allready"})
     else:

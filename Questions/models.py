@@ -12,6 +12,8 @@ class History(models.Model):
     # The answer given to the question
     respons = models.TextField()
 
+    chunks = models.TextField()
+
 
 class UserValues(models.Model):
     user = models.CharField(max_length=255)
