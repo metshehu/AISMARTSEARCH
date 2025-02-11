@@ -1,22 +1,30 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    {% load static %}
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Netflix User Selection</title>
-    <link rel="stylesheet" href="{% static 'css/questionchunks.css' %}" />
-  </head>
+    <head>
+        {% load static %}
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Netflix User Selection</title>
 
-  <body>
-    {% for item in data %}
-        <h2>File: {{ item.file }}</h2>
-        <h3>Chunks:</h3>
-        {% for chunk in item.chunks %}
-            <div class="chunk">
-                <pre>{{ chunk }}</pre>
-            </div>
-        {% endfor %}
-    {% endfor %}
-  </body>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'css/questionchunks.css' %}" />
+    </head>
+
+    <body>
+        <div class="container">
+            {% for item in data %}
+                <h2>File: {{ item.file }}</h2>
+                <div class="items">
+
+                    {% for chunk in item.chunks %}
+                        <div class="chunk">
+                            <pre>{{ chunk }}</pre>
+                        </div>
+                    {% endfor %}
+
+                </div> <!-- Closing .items div -->
+            {% endfor %}
+        </div> <!-- Closing .container div -->
+    </body>
 </html>
+

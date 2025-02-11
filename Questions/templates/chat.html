@@ -18,7 +18,7 @@
                 </div>
 
                 <div class="chat-header">
-                    <h3>Met.AI</h3>
+                        <a href='/'> <h3>Met.AI</h3></a>
                     <button class="settings-button" onclick="toggleFileUploadContainer()">
                         <div class="dot-wrapper">
                             <div class="dot"></div>
@@ -51,14 +51,22 @@
                 <h2 class="underline">Uploaded files ({{files|length}})</h2>
                 <div class="file-grid">
                     {% for i in files %}
-                    <div class="file">
                         {% if '.pdf' in i %}
+
+                        <div class="file pdf">
                         <img src="{% static 'staticphotos/PdfLogo.png' %}" alt="PDF">
-                        {% elif '.word' in i %}
-                        <img  src="{% static 'staticphotos/WordLogo.png' %}" alt="Word">
-                        {% endif %}
+
                         <p>{{i}}</p>
-                    </div>
+                        </div>
+                        {% elif '.docx' in i %}
+
+                    <div class="file word">
+                        <img  src="{% static 'staticphotos/WordLogo.png' %}" alt="Word">
+
+                        <p>{{i}}</p>
+
+                        </div>
+                        {% endif %}
                     {% endfor %}
                    <div class="file add"  data-url="{% url 'save-files' user=user %}">
 

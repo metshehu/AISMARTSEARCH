@@ -52,7 +52,9 @@ def remove_csv(user):
 
 
 def recrate_csvs(user_path, user, parser):
-    files = allFileformat(user_path, '.pdf')
+    pdf_files = allFileformat(user_path, '.pdf')
+    word_files = allFileformat(user_path, '.docx')
+    files = pdf_files + word_files
     for file_name in files:
         file_url = f"{settings.STATIC_UPLOAD_DIR}/{user}/{file_name}"
         fileChunks, fileEmbedings = parser.embedd(file_url)
@@ -352,23 +354,40 @@ def getchunksforQuestin(request, user, question):
     #    chunk.append(i.chunks)
     # chunk_list = ast.literal_eval(chunk.chunks)
 
-    raw_response = chunk.chunks.replace("'", '"')
+    # chunk.chunks.replace("'", '"').replace('"s', '\\"s')
+    raw_response = chunk.chunks.replace("\'", "\"")
 
-# Load the JSON string into Python
+    # Replacing single quotes with double quotes
+    # raw_response = chunk.chunks.replace("'", '"')
+    # Properly escaping backslashes for double quotes
+    # raw_response = raw_response.replace('\\"s', '\\\\"s')
+
+# Now convert the string into a Python list (if needed)
+    # json_string = json.dumps(chunk.chunks)
     data = json.loads(raw_response)
+    print("this is data")
+    files = []
+    chunks = []
+    for i in data:
+        print(i)
+        files.append(i['file'])
+        chunks.append(i['chunks'][:])
 
+    print("this is data yesysey")
+    print(files)
+    print("end")
+
+    # data = data*5
+
+    # for i in data:
+    #    for j in i['chunks']:
+    #        print('<>'*50)
+    #        print(j)
+    #        print('<>'*50)
     context = {
         #   'chunks': chunk_list,
         'data': data
     }
-
-# Print the parsed data
-    #    for item in data:
-    #    print(f"File: {item['file']}")
-    #    print("Chunks:")
-    #    for chunk in item['chunks']:
-    #        print(chunk)
-    # return JsonResponse({'this is data --->': f"{data}"})
     return render(request, 'questionchunks.html', context)
 
 
@@ -381,7 +400,10 @@ def chat(request, user):
         chat_message = History(
             sender=user, question=text, respons=responds, chunks=unpackdick(all_data))
         chat_message.save()
-    files = allFileformat(mypath, '.pdf')
+    pdf_files = allFileformat(mypath, '.pdf')
+    word_files = allFileformat(mypath, '.docx')
+    files = pdf_files+word_files
+
     combined = user_history(user)
     context = {
         'user': user,
@@ -392,6 +414,12 @@ def chat(request, user):
     return render(request, 'chat.html', context)
 
 
+"""
+okay must make a comment formating patter for the chunks so it can be turend into data that i can parse very simple
+so that i dont get a error then must change the chunk.chunks / data= json.loads(raw_response)
+"""
+
+
 def unpackdick(data):
 
     formatted_data = [
@@ -399,7 +427,12 @@ def unpackdick(data):
         for filename, info in data.items()
     ]
 
-    return (formatted_data)
+    print('_'*100)
+    print(formatted_data)
+    print('_'*100)
+
+    # return (formatted_data)
+    return json.dumps(formatted_data, ensure_ascii=False)
 
 
 def home(request):
@@ -473,8 +506,9 @@ def save_file(uploaded_file, user):
     parser.SetSpliter(spliter=spliter, chuncksize=chunksize, overlap=overlap)
 
     fileChunks, fileEmbedings = parser.embedd(file_url)
+
     parser.SaveCsv(settings.STATIC_UPLOAD_DIR+'/'+user,
-                   uploaded_file.name[:-4], fileEmbedings, fileChunks)
+                   uploaded_file.name, fileEmbedings, fileChunks)
     return fileEmbedings
 
 

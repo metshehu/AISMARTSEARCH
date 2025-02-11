@@ -4,14 +4,23 @@ import os
 
 import numpy as np
 import pandas as pd
+from docx import Document
 from dotenv import find_dotenv, load_dotenv
-from langchain.document_loaders import PyPDFLoader
+from langchain.document_loaders import Docx2txtLoader, PyPDFLoader
 from langchain_chroma import Chroma
 from langchain_openai import OpenAI, OpenAIEmbeddings
 from langchain_text_splitters import (CharacterTextSplitter,
                                       MarkdownTextSplitter,
                                       RecursiveCharacterTextSplitter,
                                       TokenTextSplitter)
+
+"""
+
+add worddoc parse
+and after taht make it so i can parse imges but thats for later lol
+
+
+"""
 from sklearn.metrics.pairwise import cosine_similarity
 
 
@@ -61,9 +70,35 @@ class Parsers():
             print(str(vector)[:100]+'top')
             print(str(vector)[len(showList)-100:]+'bottem')
 
+    def load_word_document(self, file_path):
+        """Extract text from a Word (.docx) file and return as LangChain documents."""
+        doc = Document(file_path)
+        text = "\n".join(
+            [para.text for para in doc.paragraphs if para.text.strip()])
+        return [text]  # Return as a list for consistency
+
+    def loade(self, file_path):
+        documents = ''
+        if file_path.endswith('.pdf'):
+            loader = PyPDFLoader(file_path)
+        elif file_path.endswith('.docx'):
+            loader = Docx2txtLoader(file_path)
+        else:
+            raise ValueError(
+                "Unsupported file format. Please provide a PDF or Word document.")
+        return loader
+
     def embedd(self, file_path):
-        loader = PyPDFLoader(file_path)
+        # loader = PyPDFLoader(file_path)
+        # documents = loader.load()
+
+        loader = self.loade(file_path)
         documents = loader.load()
+
+        if (file_path.endswith('.docx')):
+            documents = [Document(page_content=doc) if isinstance(
+                doc, str) else doc for doc in documents]
+
         chunks = self.splitter.split_documents(documents)
         chunks = [doc.page_content for doc in chunks]
         vectors = self.embedingAPI.embed_documents(chunks)
@@ -80,6 +115,8 @@ class Parsers():
         })
         if not file_path.endswith("/"):
             file_path += "/"
+
+        name = name[:name.index('.')]
         locat = file_path+name+'.csv'
         df.to_csv(locat, index=False)
 
@@ -171,7 +208,6 @@ class Parsers():
 
 
 # ------------------------------------------------------------------------------------------------
-
 
     def Vectoraiz(self, file_path):
         self.file_contet = PyPDFLoader(file_path).load()

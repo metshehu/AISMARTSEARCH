@@ -13,6 +13,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: "Poppins", sans-serif;
 }
 
 .struc {
@@ -73,15 +74,21 @@ body {
 /* File Grid */
 .file-grid {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(120px, 1fr)
-  ); /* Flexible grid for responsive layout */
-  gap: 10px; /* Space between items */
-  justify-content: center; /* Center the grid in the container */
-  align-items: start; /* Align items to the top */
-  padding: 10px; /* Optional: Add some padding around the grid */
+  grid-template-columns: repeat(2, 1fr); /* Exactly 2 columns */
+  gap: 15px; /* Space between items */
+  justify-content: center;
+  align-items: start;
+  padding: 10px;
 }
+
+/* Make it responsive: Switch to a single column on small screens */
+@media (max-width: 600px) {
+  .file-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+
 /* Individual File Block */
 .file {
   background-color: #ccc;
@@ -93,8 +100,8 @@ body {
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
-  max-width: 120px; /* Ensure consistent file block size */
-  max-height: 150px; /* Maintain consistent height */
+  min-width: 120px; /* Ensure consistent file block size */
+  min-height: 150px; /* Maintain consistent height */
 }
 .file img {
   max-width: 40px;
@@ -109,12 +116,32 @@ body {
   display: inline-block;
 }
 
-/* Highlighted File */
-.file.highlighted {
+/* Word File Styling */
+.file.word {
+  border: 1px solid blue;
+}
+
+/* Highlighted Word File */
+.file.word.highlighted {
   border: 2px solid #0056ff; /* Blue border */
   background-color: #eaf4ff; /* Light blue background */
   color: #0056ff; /* Blue text */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
+/* PDF File Styling */
+.file.pdf {
+  border: 1px solid red; /* Red border */
+  color: #cc0000; /* Dark red text */
+}
+
+/* Optional: Add a hover effect */
+.file.pdf:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(255, 0, 0, 0.2); /* Red glow effect */
+}
+
+/* Highlighted File */
 .file.add {
   background-color: #d9d9d9;
   font-size: 2rem;
@@ -268,9 +295,13 @@ body {
   max-width: calc(100% - 30%);
   word-wrap: break-word;
   display: flex;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease; /* Smooth transition */
 }
 .sent:hover {
-    background-color:#6a5acd;
+  transform: translateY(-10px); /* Move the div up by 10px */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Add a shadow for a "pop-up" effect */
 }
 
 .sent p {
