@@ -79,6 +79,8 @@ body {
   justify-content: center;
   align-items: start;
   padding: 10px;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
 /* Make it responsive: Switch to a single column on small screens */
@@ -87,7 +89,6 @@ body {
     grid-template-columns: repeat(1, 1fr);
   }
 }
-
 
 /* Individual File Block */
 .file {
@@ -102,6 +103,10 @@ body {
     box-shadow 0.2s ease;
   min-width: 120px; /* Ensure consistent file block size */
   min-height: 150px; /* Maintain consistent height */
+  max-width: 120px;
+  max-height: 150px;
+
+  overflow: hidden; /* Hide any overflowing text */
 }
 .file img {
   max-width: 40px;

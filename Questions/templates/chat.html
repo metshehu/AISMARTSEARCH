@@ -50,6 +50,10 @@
             <div class="fileupload-container">
                 <h2 class="underline">Uploaded files ({{files|length}})</h2>
                 <div class="file-grid">
+                   <div class="file add"  data-url="{% url 'save-files' user=user %}">
+                        <p>+</p>
+                    </div>
+ 
                     {% for i in files %}
                         {% if '.pdf' in i %}
 
@@ -68,11 +72,7 @@
                         </div>
                         {% endif %}
                     {% endfor %}
-                   <div class="file add"  data-url="{% url 'save-files' user=user %}">
-
-                        <p>+</p>
-                    </div>
-                </div>
+               </div>
 
             </div>
         </div>
