@@ -153,18 +153,18 @@ class Parsers():
         closest_index = np.argmax(distances)
         if (similarities[closest_index] < threshold):
             return ([], 0)
-        print('*'*100)
-        print(similarities)
-        print('-'*100)
+        #print('*'*100)
+        #print(similarities)
+        #print('-'*100)
         # Reverse for descending order
         sorted_indices = np.argsort(similarities)[::-1]
 
         for i in range(0, len(sorted_indices[:3])):
-            print(similarities[sorted_indices[i]])
+            #print(similarities[sorted_indices[i]])
             if (similarities[sorted_indices[i]] >= threshold):
                 top_3_indices.append(sorted_indices[i])
 
-        print('*'*100)
+        #print('*'*100)
         # print(top_3_vectors, " top 3 vectors")
         # print("-"*20)
         # print(top_3_similarities, " top 3 similierts")

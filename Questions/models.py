@@ -12,7 +12,17 @@ class History(models.Model):
     # The answer given to the question
     respons = models.TextField()
 
-    chunks = models.TextField()
+
+class Chunk(models.Model):
+    # Link each chunk to its corresponding History record
+    history = models.ForeignKey(
+        History, on_delete=models.CASCADE, related_name='chunks')
+
+    # The text content of the chunk
+    chunk_text = models.TextField()
+
+    def __str__(self):
+        return f"Chunk {self.chunk_order} for History ID {self.history.id}"
 
 
 class UserValues(models.Model):

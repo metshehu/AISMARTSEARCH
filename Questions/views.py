@@ -17,7 +17,7 @@ from openai import OpenAI
 from Main import Parsers
 
 from .forms import FileUploadForm, MakeDirForm, UserValueForm
-from .models import History, UserValues
+from .models import Chunk, History, UserValues
 
 
 def getalldirs(mypath):
@@ -232,7 +232,7 @@ def context_aware_responses(query, Question_history, Answer_history, data, user)
         temperature=temp,  # Strict and deterministic responses
 
     )
-    print(messages)
+    # print(messages)
     response_message = response.choices[0].message.content
     return response_message
 
@@ -346,8 +346,15 @@ def user_history(user):
 
 def getchunksforQuestin(request, user, question):
 
-    chunk = History.objects.filter(
+    instance = History.objects.filter(
         sender=user, question=question).first()
+
+    # chunk = instance.chucks.all()
+
+    # print('$'*50)
+    # print(chunk.chunks)
+    # print('$'*50)
+
     # chunk = []
     # for i in History.objects.filter(sender=user):
     #    chunk.append(i.question)
@@ -355,7 +362,6 @@ def getchunksforQuestin(request, user, question):
     # chunk_list = ast.literal_eval(chunk.chunks)
 
     # chunk.chunks.replace("'", '"').replace('"s', '\\"s')
-    raw_response = chunk.chunks.replace("\'", "\"")
 
     # Replacing single quotes with double quotes
     # raw_response = chunk.chunks.replace("'", '"')
@@ -364,31 +370,33 @@ def getchunksforQuestin(request, user, question):
 
 # Now convert the string into a Python list (if needed)
     # json_string = json.dumps(chunk.chunks)
-    data = json.loads(raw_response)
-    print("this is data")
-    files = []
-    chunks = []
-    for i in data:
-        print(i)
-        files.append(i['file'])
-        chunks.append(i['chunks'][:])
-
-    print("this is data yesysey")
-    print(files)
-    print("end")
-
-    # data = data*5
-
-    # for i in data:
-    #    for j in i['chunks']:
     #        print('<>'*50)
-    #        print(j)
-    #        print('<>'*50)
+    data = []
+    for i in instance.chunks.all():
+        data.append(i.chunk_text)
+
+    print("this is data and this is the len ", len(data))
+    print(data)
     context = {
         #   'chunks': chunk_list,
         'data': data
     }
-    return render(request, 'questionchunks.html', context)
+    return render(request, 'test.html', context)
+
+
+def saveHitoryChunsk(instance, data):
+
+    print('$'*50)
+    for i in unpackdick(data):
+        for j in i:
+            print(j[:50])
+            Chunk.objects.create(history=instance, chunk_text=j)
+    print('='*50)
+    for i in instance.chunks.all():
+        print(i.chunk_text[:50])
+
+    print('$'*50)
+    return None
 
 
 def chat(request, user):
@@ -398,8 +406,10 @@ def chat(request, user):
         text = request.POST.get("question")
         responds, all_data = asking_normal(user, text)
         chat_message = History(
-            sender=user, question=text, respons=responds, chunks=unpackdick(all_data))
+            # , chunks=unpackdick(all_data))
+            sender=user, question=text, respons=responds)
         chat_message.save()
+        saveHitoryChunsk(chat_message, all_data)
     pdf_files = allFileformat(mypath, '.pdf')
     word_files = allFileformat(mypath, '.docx')
     files = pdf_files+word_files
@@ -422,17 +432,17 @@ so that i dont get a error then must change the chunk.chunks / data= json.loads(
 
 def unpackdick(data):
 
+    #    formatted_data = [
+    #    {"file": filename, "chunks": info["chunks"]}
+
+    #    for filename, info in data.items()
+    # ]
     formatted_data = [
-        {"file": filename, "chunks": info["chunks"]}
+        info["chunks"]
         for filename, info in data.items()
     ]
 
-    print('_'*100)
-    print(formatted_data)
-    print('_'*100)
-
-    # return (formatted_data)
-    return json.dumps(formatted_data, ensure_ascii=False)
+    return formatted_data
 
 
 def home(request):

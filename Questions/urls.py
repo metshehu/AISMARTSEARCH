@@ -17,5 +17,9 @@ urlpatterns = [
     path('delete-user/<str:user>', views.delet_user, name='delet-user'),
 
     path('get-chunks/<str:user>/<str:question>',
-         views.getchunksforQuestin, name='chunks')
+         views.getchunksforQuestin, name='chunks'),
+
+
+
+
 ]
