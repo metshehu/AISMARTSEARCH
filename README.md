@@ -22,6 +22,13 @@ python3 manage.py runserver
 Open your browser, upload your files, and start asking questions.
 METIAIII will answer — and maybe, just maybe, it will remember.
 
+🔑 Environment Setup
+Before you run the server, make sure your OpenAI API key is set up.
+Add this to your ~/.zshrc, ~/.bashrc, or .env file (if using python-dotenv):
+
+```export OPENAI_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx```
+Then:```source ~/.zshrc  # or .bashrc, depending on your shell```
+
 🧠 What METIAIII Can Do
 🗂️ Upload and index your personal documents
 
