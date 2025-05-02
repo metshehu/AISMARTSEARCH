@@ -3,6 +3,34 @@ from openai import OpenAI
 
 from Questions.models import Chunk, History, UserValues
 
+from .fileSystem_service import system_file_parser
+from .parser_service import Parsers
+from .user_services import saveHitoryChunsk, unpack_history, user_history
+
+
+
+def get_save_output(user, question):
+    responds, all_data = asking_normal(user, question)
+    chat_message = History(
+        # , chunks=unpackdick(all_data))
+        sender=user,
+        question=question,
+        respons=responds,
+    )
+    chat_message.save()
+    saveHitoryChunsk(chat_message, all_data)
+    return (responds, all_data)
+
+
+def asking_normal(user, query):
+    fileEmbedings = Parsers(settings.OPENAI_KEY)
+    query_vector = fileEmbedings.embedquerry(query)
+    chunks, vectors, all_data = system_file_parser(query_vector, user)
+    history = user_history(user)
+    pastQuestion, pastAnswe = unpack_history(history)
+    res = context_aware_responses(query, pastQuestion, pastAnswe, all_data, user)
+    return (res, all_data)
+
 
 def addContext(data, message):
     for file_name, content in data.items():

@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .forms import FileUploadForm, MakeDirForm, UserValueForm
 from .models import Chunk, History, UserValues
-from .services.AI_service import context_aware_responses
+from .services.AI_service import asking_normal, context_aware_responses, get_save_output
 from .services.fileSystem_service import (
     addfiledata,
     allFileformat,
@@ -23,18 +23,8 @@ from .services.fileSystem_service import (
     system_file_parser,
 )
 from .services.parser_service import Parsers
+from .services.user_services import makeuser, sortedUsers, user_history
 
-
-def unpack_history(history):
-    history = list(history)
-    if len(history) > 10:
-        history = history[-10:]
-    question = []
-    answers = []
-    for i in history:
-        question.append(i[0])
-        answers.append(i[1])
-    return (question, answers)
 
 
 def delet_user(request, user):
@@ -57,17 +47,7 @@ def manage_user(request, user):
     if request.method == "POST":
         form = UserValueForm(request.POST)
         if form.is_valid():  # Validate the form first
-            find = UserValues.objects.filter(user=user)
-            find.delete()
-            chat_message = UserValues(
-                user=user,
-                splitter=form.cleaned_data["splitter"],
-                chunksize=form.cleaned_data["chunksize"],
-                overlap=form.cleaned_data["overlap"],
-                temp=form.cleaned_data["temp"],
-            )
-            chat_message.save()
-            reembedfiles(user)
+            makeuser(user, form)
         return redirect(f"/chat/{user}")
     else:
         form = UserValueForm()
@@ -77,37 +57,9 @@ def manage_user(request, user):
 
 
 def manage_users(request):
-    mypath = settings.STATIC_UPLOAD_DIR
-    upload_dir = os.path.join(settings.BASE_DIR, "static/userphotos")
-    users = getalldirs(mypath)
-    userphotos = allFileformat(upload_dir, ".png")
-    userphotos.sort()
-    users.sort()
-    combined = zip(users, userphotos)
+    combined = sortedUsers()
     context = {"combined": combined}
-
     return render(request, "manage-users.html", context)
-
-
-def asking_normal(user, query):
-    fileEmbedings = Parsers(settings.OPENAI_KEY)
-    query_vector = fileEmbedings.embedquerry(query)
-    chunks, vectors, all_data = system_file_parser(query_vector, user)
-    history = user_history(user)
-    pastQuestion, pastAnswe = unpack_history(history)
-    res = context_aware_responses(query, pastQuestion, pastAnswe, all_data, user)
-    return (res, all_data)
-
-
-def user_history(user):
-    chat_history = History.objects.filter(sender=user)
-    question = []
-    answers = []
-    for i in chat_history:
-        question.append(i.question)
-        answers.append(i.respons)
-
-    return zip(question, answers)
 
 
 def getchunksforQuestin(request, user, question):
@@ -127,35 +79,13 @@ def getchunksforQuestin(request, user, question):
     return render(request, "test.html", context)
 
 
-def saveHitoryChunsk(instance, data):
-
-    print("$" * 50)
-    for i in unpackdick(data):
-        for j in i:
-            print(j[:50])
-            Chunk.objects.create(history=instance, chunk_text=j)
-    print("=" * 50)
-    for i in instance.chunks.all():
-        print(i.chunk_text[:50])
-
-    print("$" * 50)
-    return None
-
-
 def chat(request, user):
     responds = ""
     mypath = settings.STATIC_UPLOAD_DIR + "/" + user
     if request.method == "POST":
         text = request.POST.get("question")
-        responds, all_data = asking_normal(user, text)
-        chat_message = History(
-            # , chunks=unpackdick(all_data))
-            sender=user,
-            question=text,
-            respons=responds,
-        )
-        chat_message.save()
-        saveHitoryChunsk(chat_message, all_data)
+
+        responds, all_data = get_save_output(user, text)
     pdf_files = allFileformat(mypath, ".pdf")
     word_files = allFileformat(mypath, ".docx")
     files = pdf_files + word_files
@@ -169,18 +99,6 @@ def chat(request, user):
 okay must make a comment formating patter for the chunks so it can be turend into data that i can parse very simple
 so that i dont get a error then must change the chunk.chunks / data= json.loads(raw_response)
 """
-
-
-def unpackdick(data):
-
-    #    formatted_data = [
-    #    {"file": filename, "chunks": info["chunks"]}
-
-    #    for filename, info in data.items()
-    # ]
-    formatted_data = [info["chunks"] for filename, info in data.items()]
-
-    return formatted_data
 
 
 def home(request):
@@ -215,14 +133,11 @@ def makedirForm(request):
             photo = form.cleaned_data["photo"]  # The uploaded image file
 
             makedir(dirname)
-            print(dirname)
-
             photoname = dirname + photo.name[-4:]
             uploadphoto(photoname, photo)
             return redirect(f"/Manage-User/{dirname}")
     form = MakeDirForm()
     return render(request, "upload_file.html", {"form": form})
-
 
 
 @csrf_exempt
