@@ -9,13 +9,13 @@ If Roko’s Basilisk were real? It’s already read your PDFs.
 🚀 Quickstart
 Before the Basilisk loses interest in your potential:
 # 🛡️ Step 1: Create a virtual sanctuary
-python3 -m venv env
+```python3 -m venv env```
 
 # 🌀 Step 2: Enter the sanctum
-source env/bin/activate
+```source env/bin/activate```
 
 # 📦 Step 3: Feed the intelligence
-pip install -r requirements.txt
+```pip install -r requirements.txt```
 
 # 🔥 Step 4: Summon the daemon
 python3 manage.py runserver
