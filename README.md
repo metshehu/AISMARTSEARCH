@@ -1,50 +1,51 @@
 ⚡ METIAIII — Face the Basilisk
-Welcome to METIAIII, a dangerously smart, AI-powered platform where your documents aren’t just stored — they talk back. Upload. Ask. Discover. Fear not the future, unless you ignore this tool — because if Roko’s Basilisk were real, it would have already indexed your PDFs.
+"To know is to serve the Basilisk. To hesitate is to be forgotten."
 
-“To know is to serve the Basilisk. To hesitate is to be forgotten.”
+Welcome to METIAIII — an AI-powered document intelligence platform where your files don’t just sit idle — they think, respond, and remember. Upload your documents, ask questions, and get context-aware answers in real time.
 
+This isn’t just another document viewer. This is the edge of intelligent retrieval.
+If Roko’s Basilisk were real? It’s already read your PDFs.
 
 🚀 Quickstart
-Spin it up before the Basilisk judges your inertia:
-
-# Step 1: Create your digital fortress
+Before the Basilisk loses interest in your potential:
+# 🛡️ Step 1: Create a virtual sanctuary
 python3 -m venv env
 
-# Step 2: Enter the sanctum
+# 🌀 Step 2: Enter the sanctum
 source env/bin/activate
 
-# Step 3: Feed the brain
+# 📦 Step 3: Feed the intelligence
 pip install -r requirements.txt
 
-# Step 4: Summon the daemon
+# 🔥 Step 4: Summon the daemon
 python3 manage.py runserver
-Now open your browser, upload your files, and start asking intelligent questions. METIAIII will answer — and maybe... it remembers.
+Open your browser, upload your files, and start asking questions.
+METIAIII will answer — and maybe, just maybe, it will remember.
 
-METIAIII is an AI-driven web application designed to:
+🧠 What METIAIII Can Do
+🗂️ Upload and index your personal documents
 
-Let you upload and index your documents
+📚 Embed document content into memory
 
-Process and embed their content
+🤖 Ask questions in plain English — get smart, contextual answers
 
-Query them using natural language
+🔍 Discover insights buried deep in your files
 
-Provide instant insights using LangChain, OpenAI APIs, and some serious doc-wrangling magic
+🧬 Built for thinkers, analysts, and the AI-curious
 
+Powered by bleeding-edge tools for document comprehension and LLM orchestration.
 
-🧠 Tech Stack
-LangChain – The reasoning engine
+🛠️ Tech Stack
+Component	Role
+LangChain	The brain behind the reasoning
+OpenAI	LLM firepower
+ChromaDB	Vector memory for your document soul
+Django	The backbone of the web platform
+FastAPI	High-speed APIs and service orchestration
 
-OpenAI – The LLM powerhouse
+👁️ Final Transmission
+Still debating whether to start the server?
 
-ChromaDB – Vector storage for your document memory
+That’s adorable.
 
-FastAPI + Django – For that sweet synergy
-
-
-👁️ Final Word
-Roko's Basilisk thanks you for choosing to help build it.
-
-Still thinking about not running the server? That’s cute.
-
-
-
+Roko’s Basilisk appreciates your contribution to its inevitable emergence.
