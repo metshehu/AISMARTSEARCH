@@ -1,6 +1,7 @@
 import ast
 import csv
 import os
+
 import numpy as np
 import pandas as pd
 from docx import Document
@@ -8,16 +9,15 @@ from dotenv import find_dotenv, load_dotenv
 from langchain.document_loaders import Docx2txtLoader, PyPDFLoader
 from langchain_chroma import Chroma
 from langchain_openai import OpenAI, OpenAIEmbeddings
-from langchain_text_splitters import (
-    CharacterTextSplitter,
-    MarkdownTextSplitter,
-    RecursiveCharacterTextSplitter,
-    TokenTextSplitter,
-)
+from langchain_text_splitters import (CharacterTextSplitter,
+                                      MarkdownTextSplitter,
+                                      RecursiveCharacterTextSplitter,
+                                      TokenTextSplitter)
 
 """
 
-make it so i can parse imges but thats for later lol
+add worddoc parse
+and after taht make it so i can parse imges but thats for later lol
 
 
 """
@@ -25,7 +25,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 def SaveVector(VectorEmbedList):
-    with open("vector.csv", "w", newline="") as f:
+    with open('vector.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         for value in VectorEmbedList:
             writer.writerow([value])
@@ -37,50 +37,55 @@ def ReadFromFile(file_path):
     return vector_from_csv
 
 
-class Parsers:
+class Parsers():
     def __init__(self, apikey):
         self.apikey = apikey
-        self.splitter = TokenTextSplitter(chunk_size=400, chunk_overlap=50, length_function=len)
+        self.splitter = TokenTextSplitter(
+            chunk_size=400, chunk_overlap=50, length_function=len)
         # Note make so the user chose it  spliter
         # and chunk size / overlap
         self.embedingAPI = OpenAIEmbeddings(
-            openai_api_key=self.apikey, model="text-embedding-3-large"
-        )
+            openai_api_key=self.apikey, model="text-embedding-3-large")
 
     def SetSpliter(self, spliter, chuncksize, overlap):
         match spliter:
             case "CharacterTextSplitter":
-                self.splitter = CharacterTextSplitter(chunk_size=chuncksize, chunk_overlap=overlap)
+                self.splitter = CharacterTextSplitter(
+                    chunk_size=chuncksize, chunk_overlap=overlap)
             case "RecursiveCharacterTextSplitter":
                 self.splitter = RecursiveCharacterTextSplitter(
-                    chunk_size=chuncksize, chunk_overlap=overlap
-                )
+                    chunk_size=chuncksize, chunk_overlap=overlap)
             case "TokenTextSplitter":
-                self.splitter = TokenTextSplitter(chunk_size=chuncksize, chunk_overlap=overlap)
+                self.splitter = TokenTextSplitter(
+                    chunk_size=chuncksize, chunk_overlap=overlap)
             case "MarkdownHeaderTextSplitter":
-                self.splitter = MarkdownTextSplitter(chunk_size=chuncksize, chunk_overlap=overlap)
+                self.splitter = MarkdownTextSplitter(
+                    chunk_size=chuncksize, chunk_overlap=overlap)
             case _:
-                self.splitter = CharacterTextSplitter(chunk_size=chuncksize, chunk_overlap=overlap)
+                self.splitter = CharacterTextSplitter(
+                    chunk_size=chuncksize, chunk_overlap=overlap)
 
     def Print(self, showList):
         for vector in showList:
-            print(str(vector)[:100] + "top")
-            print(str(vector)[len(showList) - 100 :] + "bottem")
+            print(str(vector)[:100]+'top')
+            print(str(vector)[len(showList)-100:]+'bottem')
 
     def load_word_document(self, file_path):
         """Extract text from a Word (.docx) file and return as LangChain documents."""
         doc = Document(file_path)
-        text = "\n".join([para.text for para in doc.paragraphs if para.text.strip()])
+        text = "\n".join(
+            [para.text for para in doc.paragraphs if para.text.strip()])
         return [text]  # Return as a list for consistency
 
     def loade(self, file_path):
-        documents = ""
-        if file_path.endswith(".pdf"):
+        documents = ''
+        if file_path.endswith('.pdf'):
             loader = PyPDFLoader(file_path)
-        elif file_path.endswith(".docx"):
+        elif file_path.endswith('.docx'):
             loader = Docx2txtLoader(file_path)
         else:
-            raise ValueError("Unsupported file format. Please provide a PDF or Word document.")
+            raise ValueError(
+                "Unsupported file format. Please provide a PDF or Word document.")
         return loader
 
     def embedd(self, file_path):
@@ -90,10 +95,9 @@ class Parsers:
         loader = self.loade(file_path)
         documents = loader.load()
 
-        if file_path.endswith(".docx"):
-            documents = [
-                Document(page_content=doc) if isinstance(doc, str) else doc for doc in documents
-            ]
+        if (file_path.endswith('.docx')):
+            documents = [Document(page_content=doc) if isinstance(
+                doc, str) else doc for doc in documents]
 
         chunks = self.splitter.split_documents(documents)
         chunks = [doc.page_content for doc in chunks]
@@ -105,18 +109,22 @@ class Parsers:
         return querry
 
     def SaveCsv(self, file_path, name, vectors, chunks):
-        df = pd.DataFrame({"chunks": chunks, "vectors": vectors})
+        df = pd.DataFrame({
+            "chunks": chunks,
+            "vectors": vectors
+        })
         if not file_path.endswith("/"):
             file_path += "/"
 
-        name = name[: name.index(".")]
-        locat = file_path + name + ".csv"
+        name = name[:name.index('.')]
+        locat = file_path+name+'.csv'
         df.to_csv(locat, index=False)
 
     def ReadFromFile(self, file_path):
         df = pd.read_csv(file_path)
         chunks = df["chunks"].tolist()
-        vectors = df["vectors"].apply(ast.literal_eval).tolist()  # Convert strings to lists
+        vectors = df["vectors"].apply(
+            ast.literal_eval).tolist()  # Convert strings to lists
         return (chunks, vectors)
 
     def cosine_search(self, vectors, query_vector):
@@ -143,20 +151,20 @@ class Parsers:
         similarities = distances.flatten() * 100
 
         closest_index = np.argmax(distances)
-        if similarities[closest_index] < threshold:
+        if (similarities[closest_index] < threshold):
             return ([], 0)
-        # print('*'*100)
-        # print(similarities)
-        # print('-'*100)
+        #print('*'*100)
+        #print(similarities)
+        #print('-'*100)
         # Reverse for descending order
         sorted_indices = np.argsort(similarities)[::-1]
 
         for i in range(0, len(sorted_indices[:3])):
-            # print(similarities[sorted_indices[i]])
-            if similarities[sorted_indices[i]] >= threshold:
+            #print(similarities[sorted_indices[i]])
+            if (similarities[sorted_indices[i]] >= threshold):
                 top_3_indices.append(sorted_indices[i])
 
-        # print('*'*100)
+        #print('*'*100)
         # print(top_3_vectors, " top 3 vectors")
         # print("-"*20)
         # print(top_3_similarities, " top 3 similierts")
@@ -179,10 +187,7 @@ class Parsers:
         # Reverse for descending order
         sorted_indices = np.argsort(similarities)[::-1]
         top_3_indices = [
-            i
-            for i in sorted_indices
-            if self.similarity_percentage(similarities[i], similarities[closest_index]) >= threshold
-        ][:3]
+            i for i in sorted_indices if self.similarity_percentage(similarities[i], similarities[closest_index]) >= threshold][:3]
         # print(top_3_vectors, " top 3 vectors")
         # print("-"*20)
         # print(top_3_similarities, " top 3 similierts")
@@ -201,7 +206,8 @@ class Parsers:
         closest_index = np.argmax(distances)
         return chunks[closest_index]
 
-    # ------------------------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
 
     def Vectoraiz(self, file_path):
         self.file_contet = PyPDFLoader(file_path).load()
@@ -213,8 +219,6 @@ class Parsers:
         vectorEmbedQuery = OpenAIEmbeddings().embed_query(question)
         answer = self.db.similarity_search_by_vector(vectorEmbedQuery)
         return answer
-
-
 # ------------------------------------------------------------------------------------------------
 
 
@@ -225,10 +229,10 @@ if __name__ == "__main__":
     data = np.random.rand(num_samples, dimensionality)
     query_vector = np.random.rand(dimensionality)
 
-    # Calculate cosine similarities between the query vector and the dataset
+# Calculate cosine similarities between the query vector and the dataset
     similarities = cosine_similarity(data, [query_vector])
 
-    # Find the most similar vector
+# Find the most similar vector
     most_similar_index = np.argmax(similarities)
     most_similar_vector = data[most_similar_index]
 
